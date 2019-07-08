@@ -1,0 +1,199 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+from typing import Dict, List, Union
+import re
+import subprocess
+import sys
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+VERSION = "0.1.0"
+
+# Xinput
+# ======
+
+def get_devices() -> List[Dict[str, Union[str, int]]]:
+    device_id_cmd = 'xinput list --id-only'
+    device_id_out = subprocess.check_output(device_id_cmd, shell=True)
+    device_ids = device_id_out.decode('utf-8').splitlines()
+
+    devices = []
+
+    for device_id in device_ids:
+        device_name_cmd = 'xinput list --name-only {}'.format(device_id)
+        device_name_out = subprocess.check_output(device_name_cmd, shell=True)
+        device_name = device_name_out.decode('utf-8').rstrip('\n')
+
+        device_type_cmd ='xinput list --short {}'.format(device_id)
+        device_type_out = subprocess.check_output(device_type_cmd, shell=True)
+        matches = re.search(r'\[(.+)\(.+\)\]', device_type_out.decode('utf-8'))
+        device_type = matches.group(1).strip()
+
+        devices.append({
+            'id': device_id,
+            'name': device_name,
+            'type': device_type,
+            })
+    
+    return devices
+
+def get_device_props(device_id: int) -> List[Dict[str, str]]:
+    props_cmd = 'xinput list-props {}'.format(device_id)
+    props_out = subprocess.check_output(props_cmd, shell=True).decode('utf-8')
+    props_out = props_out.splitlines()
+    props_out.pop(0)
+    props_out = list(map(lambda x: x.replace('\t', ''), props_out))
+
+    props = []
+    for prop in props_out:
+        matches = re.search(r'^(.+) \((\d+)\):(.+)$', prop)
+        props.append({
+            'name': matches.group(1).strip(),
+            'id': matches.group(2).strip(),
+            'val': matches.group(3).strip(),
+            })
+    
+    return props
+
+def set_device_prop(device_id: int, prop_id: int, prop_val: str):
+    cmd = 'xinput set-prop {} {} {}'.format(device_id, prop_id, prop_val)
+    cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+    print(cmd)
+    print(cmd_out)
+
+
+# GTK
+# ===
+
+def refresh_devices(store: Gtk.ListStore):
+    store_devices.clear()
+    store_props.clear()
+    tree_devices_selection.unselect_all()
+    tree_props_selection.unselect_all()
+    btn_edit.set_sensitive(False)
+
+    for device in get_devices():
+        store.append([int(device['id']), device['name'], device['type']])
+
+def show_device(store: Gtk.ListStore, device_id: int):
+    store_props.clear()
+    tree_props_selection.unselect_all()
+    btn_edit.set_sensitive(False)
+
+    for prop in get_device_props(device_id):
+        store.append([int(prop['id']), prop['name'], prop['val']])
+
+def get_selected_device() -> Dict[str, Union[str, int]]:
+    # Get current selection
+    model, treeiter = tree_devices_selection.get_selected()
+    return({
+        'id': model[treeiter][0],
+        'name': model[treeiter][1],
+        'type': model[treeiter][2],
+        })
+
+def get_selected_prop() -> Dict[str, Union[str, int]]:
+    # Get current selection
+    model, treeiter = tree_props_selection.get_selected()
+    return({
+        'id': model[treeiter][0],
+        'name': model[treeiter][1],
+        'val': model[treeiter][2],
+        })
+
+class SignalHandler:
+    def on_win_app_destroy(self, *args):
+        Gtk.main_quit()
+
+    def on_btn_close_clicked(self, button: Gtk.Button):
+        Gtk.main_quit()
+
+    def on_btn_refresh_clicked(self, button: Gtk.Button):
+        refresh_devices()
+
+    def on_device_selected(self, selection: Gtk.TreeSelection):
+        model, treeiter = selection.get_selected()
+        device = {
+            'id': model[treeiter][0],
+            'name': model[treeiter][1],
+            'type': model[treeiter][2],
+            }
+        show_device(store_props, device['id'])
+
+    def on_prop_selected(self, selection: Gtk.TreeSelection):
+        btn_edit.set_sensitive(True)
+
+    def on_btn_edit_clicked(self, button: Gtk.Button):
+        # Get current selection
+        model, treeiter = tree_props_selection.get_selected()
+        prop = {
+            'id': model[treeiter][0],
+            'name': model[treeiter][1],
+            'val': model[treeiter][2],
+            }
+
+        entry_old_val.set_text(prop['val'])
+        entry_new_val.set_text(prop['val'])
+        win_edit.show_all()
+        entry_new_val.grab_focus()
+
+    def on_entry_new_val_activate(self, entry: Gtk.Entry):
+        btn_edit_apply.clicked()
+
+    def on_btn_edit_apply_clicked(self, button: Gtk.Button):
+        device = get_selected_device()
+        prop = get_selected_prop()
+        
+        new_prop_val = entry_new_val.get_text()
+
+        # Update prop
+        set_device_prop(device['id'], prop['id'], new_prop_val)
+        
+        # Update store
+        model, treeiter = tree_props_selection.get_selected()
+        model[treeiter][2] = new_prop_val
+        
+        # Close edit window
+        win_edit.hide()
+
+    def on_btn_edit_cancel_clicked(self, button: Gtk.Button):
+        win_edit.hide()
+
+builder = Gtk.Builder()
+
+# Find interface file
+if Path('app.glade').is_file():
+    builder.add_from_file('app.glade')
+elif Path('share/xinput-gui/app.glade').is_file():
+    builder.add_from_file('share/xinput-gui/app.glade')
+elif Path('/usr/share/xinput-gui/app.glade').is_file():
+    builder.add_from_file('/usr/share/xinput-gui/app.glade')
+else:
+    print('Error: app.glade not found')
+    sys.exit()
+
+builder.connect_signals(SignalHandler())
+
+win_app = builder.get_object("win_app")
+win_app.show_all()
+
+win_edit = builder.get_object("win_edit")
+entry_old_val = builder.get_object("entry_old_val")
+entry_new_val = builder.get_object("entry_new_val")
+btn_edit_cancel = builder.get_object("btn_edit_cancel")
+btn_edit_apply = builder.get_object("btn_edit_apply")
+
+btn_edit = builder.get_object("btn_edit")
+
+store_devices = builder.get_object("store_devices")
+store_props = builder.get_object("store_props")
+
+tree_devices_selection = builder.get_object("tree_devices_selection")
+tree_props_selection = builder.get_object("tree_props_selection")
+
+refresh_devices(store_devices)
+
+Gtk.main()
