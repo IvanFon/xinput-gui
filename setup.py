@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='xinput-gui',
-    version='0.1.0',
+    version='0.1.1',
     description='A simple GUI for Xorg\'s Xinput tool.',
     author='Ivan Fonseca',
     author_email='ivanfon@riseup.net',
