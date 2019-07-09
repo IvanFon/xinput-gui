@@ -8,7 +8,7 @@ A simple GUI for Xorg's Xinput tool.
 
 The latest release, along with installation instructions are available [here](https://github.com/IvanFon/xinput-gui/releases/latest).
 
-xinput-gui depends on Python 3, GTK+ 3 and PyGObject.
+xinput-gui depends on Python 3.5+, GTK+ 3.20+ and PyGObject.
 
 To use it, just run `xinput-gui`.
 
