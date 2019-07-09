@@ -8,6 +8,7 @@ setup(
     author_email='ivanfon@riseup.net',
     url='https://github.com/IvanFon/xinput-gui',
     license='GPL3',
+    packages=['src'],
     scripts=['xinput-gui'],
     data_files=[('share/xinput-gui', ['app.glade'])]
 )
