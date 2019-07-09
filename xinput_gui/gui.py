@@ -1,27 +1,39 @@
-from pathlib import Path
+# gui.py - graphical user interface
+# Copyright (C) 2019  Ivan Fonseca
+#
+# This file is part of xinput-gui.
+#
+# xinput-gui is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the # License,
+# or (at your option) any later version.
+#
+# xinput-gui is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with xinput-gui.  If not, see <https://www.gnu.org/licenses/>.
+
 from typing import Dict, Union
-import sys
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from pkg_resources import resource_filename
 
-from src import xinput
+from .xinput import get_devices, get_device_props, set_device_prop
+
+__version__ = '0.1.1'
+
 
 class Gui:
-    def __init__(self, version: str):
+    def __init__(self):
         # Create interface
         self.builder = Gtk.Builder()
         # Find interface file
-        if Path('app.glade').is_file():
-            self.builder.add_from_file('app.glade')
-        elif Path('share/xinput-gui/app.glade').is_file():
-            self.builder.add_from_file('share/xinput-gui/app.glade')
-        elif Path('/usr/share/xinput-gui/app.glade').is_file():
-            self.builder.add_from_file('/usr/share/xinput-gui/app.glade')
-        else:
-            print('Error: app.glade not found')
-            sys.exit()
+        self.builder.add_from_file(resource_filename('xinput_gui', 'app.glade'))
 
         self.builder.connect_signals(Gui.SignalHandler(self))
 
@@ -33,7 +45,7 @@ class Gui:
         self.tree_devices_selection = self.builder.get_object("tree_devices_selection")
         self.tree_props_selection = self.builder.get_object("tree_props_selection")
         self.tree_column_props_id = self.builder.get_object("tree_column_props_id")
-        
+
         # Edit window widgets
         self.win_edit = self.builder.get_object("win_edit")
         self.entry_old_val = self.builder.get_object("entry_old_val")
@@ -45,14 +57,14 @@ class Gui:
         self.win_settings = self.builder.get_object("win_settings")
         self.btn_settings_save = self.builder.get_object("btn_settings_save")
         self.chk_hide_prop_ids = self.builder.get_object("chk_hide_prop_ids")
-        
+
         self.refresh_devices()
-        self.win_app.set_title("Xinput GUI {}".format(version))
+        self.win_app.set_title("Xinput GUI {}".format(__version__))
         self.win_app.show_all()
 
         # About window widgets
         self.win_about = self.builder.get_object("win_about")
-        self.win_about.set_version(version)
+        self.win_about.set_version(__version__)
 
         Gtk.main()
 
@@ -63,25 +75,25 @@ class Gui:
         self.tree_props_selection.unselect_all()
         self.btn_edit.set_sensitive(False)
 
-        for device in xinput.get_devices():
+        for device in get_devices():
             self.store_devices.append([
                 int(device['id']),
                 device['name'],
                 device['type']
                 ])
-    
+
     def show_device(self, device_id: int):
         self.store_props.clear()
         self.tree_props_selection.unselect_all()
         self.btn_edit.set_sensitive(False)
-        
-        for prop in xinput.get_device_props(device_id):
+
+        for prop in get_device_props(device_id):
             self.store_props.append([
                 int(prop['id']),
                 prop['name'],
                 prop['val']
                 ])
-    
+
     def get_selected_device(self) -> Dict[str, Union[str, int]]:
         model, treeiter = self.tree_devices_selection.get_selected()
         return({
@@ -89,7 +101,7 @@ class Gui:
             'name': model[treeiter][1],
             'type': model[treeiter][2],
             })
-    
+
     def get_selected_prop(self) -> Dict[str, Union[str, int]]:
         model, treeiter = self.tree_props_selection.get_selected()
         return({
@@ -120,7 +132,7 @@ class Gui:
             self.tree_column_props_id.set_visible(False)
         else:
             self.tree_column_props_id.set_visible(True)
-    
+
     class SignalHandler:
         def __init__(self, gui):
             self.gui = gui
@@ -135,7 +147,7 @@ class Gui:
 
         def on_menu_about_activate(self, menu: Gtk.MenuItem):
             self.gui.win_about.run()
-        
+
         def on_btn_refresh_clicked(self, button: Gtk.Button):
             self.gui.refresh_devices()
 
@@ -147,7 +159,7 @@ class Gui:
 
         def on_btn_edit_clicked(self, button: Gtk.Button):
             prop = self.gui.get_selected_prop()
-            
+
             self.gui.entry_old_val.set_text(prop['val'])
             self.gui.entry_new_val.set_text(prop['val'])
             self.gui.win_edit.show_all()
@@ -165,7 +177,7 @@ class Gui:
             new_prop_val = self.gui.entry_new_val.get_text()
 
             # Update prop
-            xinput.set_device_prop(device['id'], prop['id'], new_prop_val)
+            set_device_prop(device['id'], prop['id'], new_prop_val)
 
             # Update store
             model, treeiter = self.gui.tree_props_selection.get_selected()
@@ -173,7 +185,7 @@ class Gui:
 
             # Close edit window
             self.gui.win_edit.hide()
-        
+
         def on_btn_edit_cancel_clicked(self, button: Gtk.Button):
             self.gui.win_edit.hide()
 
@@ -194,3 +206,8 @@ class Gui:
         def on_win_about_response(self, a, b):
             # TODO: close this properly
             self.gui.win_about.hide()
+
+
+def main():
+    """Start xinput-gui."""
+    Gui()

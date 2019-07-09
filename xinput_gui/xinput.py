@@ -1,6 +1,25 @@
+# xinput.py - wrapper around xinput
+# Copyright (C) 2019  Ivan Fonseca
+#
+# This file is part of xinput-gui.
+#
+# xinput-gui is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the # License,
+# or (at your option) any later version.
+#
+# xinput-gui is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with xinput-gui.  If not, see <https://www.gnu.org/licenses/>.
+
 from typing import Dict, List, Union
 import re
 import subprocess
+
 
 def get_devices() -> List[Dict[str, Union[str, int]]]:
     device_id_cmd = 'xinput list --id-only'
@@ -24,8 +43,9 @@ def get_devices() -> List[Dict[str, Union[str, int]]]:
             'name': device_name,
             'type': device_type,
             })
-    
+
     return devices
+
 
 def get_device_props(device_id: int) -> List[Dict[str, str]]:
     props_cmd = 'xinput list-props {}'.format(device_id)
@@ -42,13 +62,14 @@ def get_device_props(device_id: int) -> List[Dict[str, str]]:
             'id': matches.group(2).strip(),
             'val': matches.group(3).strip(),
             })
-    
+
     return props
+
 
 def set_device_prop(device_id: int, prop_id: int, prop_val: str):
     cmd = 'xinput set-prop {} {} {}'.format(device_id, prop_id, prop_val)
     cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
-    
+
     # Print command output while there's no error handling
     print(cmd)
     print(cmd_out)
