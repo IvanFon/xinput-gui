@@ -129,9 +129,6 @@ class Gui:
         def on_menu_settings_activate(self, menu: Gtk.MenuItem):
             self.gui.show_settings_window()
         
-        def on_btn_close_clicked(self, button: Gtk.Button):
-            Gtk.main_quit()
-
         def on_btn_refresh_clicked(self, button: Gtk.Button):
             self.gui.refresh_devices()
 
