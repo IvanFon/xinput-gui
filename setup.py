@@ -10,5 +10,5 @@ setup(
     license='GPL3',
     packages=['src'],
     scripts=['xinput-gui'],
-    data_files=[('share/xinput-gui', ['app.glade'])]
+    data_files=[('share/xinput-gui', ['xinput.ui'])]
 )

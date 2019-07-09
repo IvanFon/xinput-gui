@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkListStore" id="store_devices">
+    <columns>
+      <!-- column-name id -->
+      <column type="guint"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name type -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="store_props">
+    <columns>
+      <!-- column-name id -->
+      <column type="guint"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name val -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+
+  <object class="GtkWindow" id="win_app">
+    <property name="default-width">800</property>
+    <property name="default-height">400</property>
+    <property name="title" translatable="yes">Xinput GUI</property>
+    <signal name="destroy" handler="on_win_app_destroy" swapped="no"/>
+    
+    <child>
+      <object class="GtkGrid">
+        <property name="visible">True</property>
+        <property name="margin">12</property>
+        <property name="row_spacing">8</property>
+        <property name="column_spacing">16</property>
+        <property name="column_homogeneous">True</property>
+        
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Devices</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="visible">True</property>
+            <property name="expand">True</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkTreeView" id="tree_devices">
+                <property name="visible">True</property>
+                <property name="search-column">1</property>
+                <property name="model">store_devices</property>
+                <property name="activate_on_single_click">True</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection" id="tree_devices_selection">
+                    <signal name="changed" handler="on_device_selected" swapped="no"/>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title" translatable="yes">ID</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn">
+                    <property name="resizable">True</property>
+                    <property name="fixed_width">200</property>
+                    <property name="max_width">300</property>
+                    <property name="title" translatable="yes">Name</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">1</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title" translatable="yes">Type</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">2</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        
+        <child>
+          <object class="GtkButton" id="btn_refresh">
+            <property name="label" translatable="yes">Refresh</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="margin_top">5</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">2</property>
+          </packing>
+        </child>
+        
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Properties</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="visible">True</property>
+            <property name="expand">True</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkTreeView" id="tree_props">
+                <property name="visible">True</property>
+                <property name="search-column">1</property>
+                <property name="model">store_props</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection" id="tree_props_selection">
+                    <signal name="changed" handler="on_prop_selected" swapped="no"/>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title" translatable="yes">ID</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn">
+                    <property name="resizable">True</property>
+                    <property name="fixed_width">200</property>
+                    <property name="max_width">300</property>
+                    <property name="title" translatable="yes">Name</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">1</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title" translatable="yes">Value</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">2</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        
+        <child>
+          <object class="GtkButton" id="btn_edit">
+            <property name="label" translatable="yes">Edit</property>
+            <property name="visible">True</property>
+            <property name="sensitive">False</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="margin_top">4</property>
+            <signal name="clicked" handler="on_btn_edit_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">2</property>
+          </packing>
+        </child>
+
+        <child>
+          <object class="GtkButtonBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="btn_close">
+                <property name="label" translatable="yes">Close</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btn_close_clicked" swapped="no"/>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">3</property>
+          </packing>
+        </child>
+        
+      </object>
+    </child>
+  </object>
+
+  <object class="GtkGrid" id="grid_edit">
+    <property name="visible">True</property>
+    <property name="expand">True</property>
+    <property name="margin">10</property>
+    <property name="row_spacing">5</property>
+    <property name="column_spacing">10</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Current:</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">New:</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkEntry" id="entry_old_val">
+        <property name="visible">True</property>
+        <property name="sensitive">False</property>
+        <property name="editable">False</property>
+        <property name="expand">True</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkEntry" id="entry_new_val">
+        <property name="visible">True</property>
+        <property name="expand">True</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">1</property>
+      </packing>
+    </child>
+  </object>
+</interface>

@@ -52,3 +52,4 @@ def set_device_prop(device_id: int, prop_id: int, prop_val: str):
     # Print command output while there's no error handling
     print(cmd)
     print(cmd_out)
+
