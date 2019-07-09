@@ -50,6 +50,10 @@ class Gui:
         self.win_app.set_title("Xinput GUI {}".format(version))
         self.win_app.show_all()
 
+        # About window widgets
+        self.win_about = self.builder.get_object("win_about")
+        self.win_about.set_version(version)
+
         Gtk.main()
 
     def refresh_devices(self):
@@ -128,6 +132,9 @@ class Gui:
 
         def on_menu_settings_activate(self, menu: Gtk.MenuItem):
             self.gui.show_settings_window()
+
+        def on_menu_about_activate(self, menu: Gtk.MenuItem):
+            self.gui.win_about.run()
         
         def on_btn_refresh_clicked(self, button: Gtk.Button):
             self.gui.refresh_devices()
@@ -181,3 +188,9 @@ class Gui:
 
         def on_chk_hide_prop_ids_toggled(self, chk_btn: Gtk.CheckButton):
             self.gui.btn_settings_save.set_sensitive(True)
+
+        # About window signals
+
+        def on_win_about_response(self, a, b):
+            # TODO: close this properly
+            self.gui.win_about.hide()
