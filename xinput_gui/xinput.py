@@ -1,4 +1,6 @@
-# xinput.py - wrapper around xinput
+'''Wrapper around xinput.'''
+
+# xinput.py
 # Copyright (C) 2019  Ivan Fonseca
 #
 # This file is part of xinput-gui.
@@ -22,6 +24,15 @@ import subprocess
 
 
 def get_devices() -> List[Dict[str, Union[str, int]]]:
+    '''Gets a list of xinput devices.
+
+    Returns:
+        A list containing one dict entry per device. Each device has:
+            - 'id': device ID, int
+            - 'name': device name, str
+            - 'type': device type, str
+    '''
+
     device_id_cmd = 'xinput list --id-only'
     device_id_out = subprocess.check_output(device_id_cmd, shell=True)
     device_ids = device_id_out.decode('utf-8').splitlines()
@@ -33,7 +44,7 @@ def get_devices() -> List[Dict[str, Union[str, int]]]:
         device_name_out = subprocess.check_output(device_name_cmd, shell=True)
         device_name = device_name_out.decode('utf-8').rstrip('\n')
 
-        device_type_cmd ='xinput list --short {}'.format(device_id)
+        device_type_cmd = 'xinput list --short {}'.format(device_id)
         device_type_out = subprocess.check_output(device_type_cmd, shell=True)
         matches = re.search(r'\[(.+)\(.+\)\]', device_type_out.decode('utf-8'))
         device_type = matches.group(1).strip()
@@ -47,7 +58,19 @@ def get_devices() -> List[Dict[str, Union[str, int]]]:
     return devices
 
 
-def get_device_props(device_id: int) -> List[Dict[str, str]]:
+def get_device_props(device_id: int) -> List[Dict[str, Union[str, int]]]:
+    '''Gets a list of properties for a given xinput device.
+
+    Args:
+        device_id: The xinput device ID.
+
+    Returns:
+        A list containing one dict entry per device property. Each property has:
+            - name: property name, str
+            - id: property id, int
+            - val: property value, str
+    '''
+
     props_cmd = 'xinput list-props {}'.format(device_id)
     props_out = subprocess.check_output(props_cmd, shell=True).decode('utf-8')
     props_out = props_out.splitlines()
@@ -59,7 +82,7 @@ def get_device_props(device_id: int) -> List[Dict[str, str]]:
         matches = re.search(r'^(.+) \((\d+)\):(.+)$', prop)
         props.append({
             'name': matches.group(1).strip(),
-            'id': matches.group(2).strip(),
+            'id': int(matches.group(2).strip()),
             'val': matches.group(3).strip(),
             })
 
@@ -67,9 +90,17 @@ def get_device_props(device_id: int) -> List[Dict[str, str]]:
 
 
 def set_device_prop(device_id: int, prop_id: int, prop_val: str):
+    '''Sets an xinput device property.
+
+    Args:
+        device_id: An xinput device ID.
+        prop_id: ID of a property belonging to that device.
+        prop_val: The new value for the property.
+    '''
+
     cmd = 'xinput set-prop {} {} {}'.format(device_id, prop_id, prop_val)
     cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
 
-    # Print command output while there's no error handling
+    # TODO: proper error handling
     print(cmd)
     print(cmd_out)

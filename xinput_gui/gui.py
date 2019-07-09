@@ -1,4 +1,6 @@
-# gui.py - graphical user interface
+'''Graphical user interface.'''
+
+# gui.py
 # Copyright (C) 2019  Ivan Fonseca
 #
 # This file is part of xinput-gui.
