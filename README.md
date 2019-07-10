@@ -20,11 +20,11 @@ Install it with `makepkg` or your preferred AUR helper.
 
 Available on PyPI: [xinput-gui](https://pypi.org/project/xinput-gui/)
 
-Install it with pip: `pip install xinput-gui`.
+Install it with pip: `pip install --user xinput-gui`.
 
 ### Manual install
 
-Clone this repo and run `python setup.py install`.
+Clone this repo and run `./setup.py install --user`.
 
 ## Usage
 
