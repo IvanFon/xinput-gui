@@ -1,6 +1,4 @@
-'''Graphical user interface.'''
-
-# gui.py
+# gui.py - graphical user interface
 # Copyright (C) 2019  Ivan Fonseca
 #
 # This file is part of xinput-gui.
@@ -18,14 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with xinput-gui.  If not, see <https://www.gnu.org/licenses/>.
 
+'''Graphical user interface.'''
+
+from .xinput import get_devices, get_device_props, set_device_prop
+from pkg_resources import resource_filename
 from typing import Dict, Union
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from pkg_resources import resource_filename
 
-from .xinput import get_devices, get_device_props, set_device_prop
 
 __version__ = '0.1.1'
 
@@ -35,7 +35,8 @@ class Gui:
         # Create interface
         self.builder = Gtk.Builder()
         # Find interface file
-        self.builder.add_from_file(resource_filename('xinput_gui', 'app.glade'))
+        self.builder.add_from_file(
+            resource_filename('xinput_gui', 'app.glade'))
 
         self.builder.connect_signals(Gui.SignalHandler(self))
 
@@ -44,9 +45,12 @@ class Gui:
         self.btn_edit = self.builder.get_object("btn_edit")
         self.store_devices = self.builder.get_object("store_devices")
         self.store_props = self.builder.get_object("store_props")
-        self.tree_devices_selection = self.builder.get_object("tree_devices_selection")
-        self.tree_props_selection = self.builder.get_object("tree_props_selection")
-        self.tree_column_props_id = self.builder.get_object("tree_column_props_id")
+        self.tree_devices_selection = self.builder.get_object(
+            "tree_devices_selection")
+        self.tree_props_selection = self.builder.get_object(
+            "tree_props_selection")
+        self.tree_column_props_id = self.builder.get_object(
+            "tree_column_props_id")
 
         # Edit window widgets
         self.win_edit = self.builder.get_object("win_edit")
@@ -82,7 +86,7 @@ class Gui:
                 int(device['id']),
                 device['name'],
                 device['type']
-                ])
+            ])
 
     def show_device(self, device_id: int):
         self.store_props.clear()
@@ -94,7 +98,7 @@ class Gui:
                 int(prop['id']),
                 prop['name'],
                 prop['val']
-                ])
+            ])
 
     def get_selected_device(self) -> Dict[str, Union[str, int]]:
         model, treeiter = self.tree_devices_selection.get_selected()
@@ -102,7 +106,7 @@ class Gui:
             'id': model[treeiter][0],
             'name': model[treeiter][1],
             'type': model[treeiter][2],
-            })
+        })
 
     def get_selected_prop(self) -> Dict[str, Union[str, int]]:
         model, treeiter = self.tree_props_selection.get_selected()
@@ -110,7 +114,7 @@ class Gui:
             'id': model[treeiter][0],
             'name': model[treeiter][1],
             'val': model[treeiter][2],
-            })
+        })
 
     def show_settings_window(self):
         # Get settings and update controls

@@ -1,6 +1,4 @@
-'''Wrapper around xinput.'''
-
-# xinput.py
+# xinput.py - wrapper around xinput
 # Copyright (C) 2019  Ivan Fonseca
 #
 # This file is part of xinput-gui.
@@ -17,6 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with xinput-gui.  If not, see <https://www.gnu.org/licenses/>.
+
+'''Wrapper around xinput.'''
 
 from typing import Dict, List, Union
 import re
@@ -53,7 +53,7 @@ def get_devices() -> List[Dict[str, Union[str, int]]]:
             'id': device_id,
             'name': device_name,
             'type': device_type,
-            })
+        })
 
     return devices
 
@@ -84,7 +84,7 @@ def get_device_props(device_id: int) -> List[Dict[str, Union[str, int]]]:
             'name': matches.group(1).strip(),
             'id': int(matches.group(2).strip()),
             'val': matches.group(3).strip(),
-            })
+        })
 
     return props
 
