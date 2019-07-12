@@ -428,7 +428,9 @@
     <property name="comments" translatable="yes">💜</property>
     <property name="website">https://github.com/IvanFon/xinput-gui</property>
     <property name="website_label" translatable="yes">Github</property>
-    <property name="authors">Ivan Fonseca</property>
+    <property name="authors">Ivan Fonseca
+McSinyx
+Romain F. T.</property>
     <property name="logo_icon_name">image-missing</property>
     <property name="license_type">gpl-3-0</property>
     <signal name="response" handler="on_win_about_response" swapped="no"/>
