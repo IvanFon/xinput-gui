@@ -33,46 +33,46 @@ __version__ = '0.1.1'
 class Gui:
     def __init__(self):
         # Create interface
-        self.builder = Gtk.Builder()
-        # Find interface file
-        self.builder.add_from_file(
-            resource_filename('xinput_gui', 'app.glade'))
+        builder = self.get_builder()
 
-        self.builder.connect_signals(Gui.SignalHandler(self))
+        builder.connect_signals(Gui.SignalHandler(self))
 
         # Main window widgets
-        self.win_app = self.builder.get_object("win_app")
-        self.btn_edit = self.builder.get_object("btn_edit")
-        self.store_devices = self.builder.get_object("store_devices")
-        self.store_props = self.builder.get_object("store_props")
-        self.tree_devices_selection = self.builder.get_object(
+        self.win_app = builder.get_object("win_app")
+        self.btn_edit = builder.get_object("btn_edit")
+        self.store_devices = builder.get_object("store_devices")
+        self.store_props = builder.get_object("store_props")
+        self.tree_devices_selection = builder.get_object(
             "tree_devices_selection")
-        self.tree_props_selection = self.builder.get_object(
+        self.tree_props_selection = builder.get_object(
             "tree_props_selection")
-        self.tree_column_props_id = self.builder.get_object(
+        self.tree_column_props_id = builder.get_object(
             "tree_column_props_id")
 
         # Edit window widgets
-        self.win_edit = self.builder.get_object("win_edit")
-        self.entry_old_val = self.builder.get_object("entry_old_val")
-        self.entry_new_val = self.builder.get_object("entry_new_val")
-        self.btn_edit_cancel = self.builder.get_object("btn_edit_cancel")
-        self.btn_edit_apply = self.builder.get_object("btn_edit_apply")
+        self.dialog_edit = builder.get_object("dialog_edit")
+        self.entry_old_val = builder.get_object("entry_old_val")
+        self.entry_new_val = builder.get_object("entry_new_val")
+        self.btn_edit_cancel = builder.get_object("btn_edit_cancel")
+        self.btn_edit_apply = builder.get_object("btn_edit_apply")
 
         # Settings window widgets
-        self.win_settings = self.builder.get_object("win_settings")
-        self.btn_settings_save = self.builder.get_object("btn_settings_save")
-        self.chk_hide_prop_ids = self.builder.get_object("chk_hide_prop_ids")
+        self.win_settings = builder.get_object("win_settings")
+        self.btn_settings_save = builder.get_object("btn_settings_save")
+        self.chk_hide_prop_ids = builder.get_object("chk_hide_prop_ids")
 
         self.refresh_devices()
         self.win_app.set_title("Xinput GUI {}".format(__version__))
         self.win_app.show_all()
 
         # About window widgets
-        self.win_about = self.builder.get_object("win_about")
+        self.win_about = builder.get_object("win_about")
         self.win_about.set_version(__version__)
 
         Gtk.main()
+        
+    def get_builder(self):
+        return Gtk.Builder().new_from_file(resource_filename('xinput_gui', 'xinput-gui.ui'))
 
     def refresh_devices(self):
         self.store_devices.clear()
@@ -164,36 +164,35 @@ class Gui:
             self.gui.btn_edit.set_sensitive(True)
 
         def on_btn_edit_clicked(self, button: Gtk.Button):
+            device = self.gui.get_selected_device()
             prop = self.gui.get_selected_prop()
 
+            # Setup dialog
+            self.gui.dialog_edit.get_message_area().get_children()[0].set_label(device['name'])
+            self.gui.dialog_edit.get_message_area().get_children()[1].set_label(prop['name'])
             self.gui.entry_old_val.set_text(prop['val'])
             self.gui.entry_new_val.set_text(prop['val'])
-            self.gui.win_edit.show_all()
             self.gui.entry_new_val.grab_focus()
+
+            # Show dialog
+
+            res = self.gui.dialog_edit.run()
+            if res == Gtk.ResponseType.APPLY:
+                new_prop_val = self.gui.entry_new_val.get_text()
+
+                # Update prop
+                set_device_prop(device['id'], prop['id'], new_prop_val)
+
+                # Update store
+                model, treeiter = self.gui.tree_props_selection.get_selected()
+                model[treeiter][2] = new_prop_val
+
+            self.gui.dialog_edit.hide()
 
         # Edit window signals
 
         def on_entry_new_val_activate(self, entry: Gtk.Entry):
             self.gui.btn_edit_apply.clicked()
-
-        def on_btn_edit_apply_clicked(self, button: Gtk.Button):
-            device = self.gui.get_selected_device()
-            prop = self.gui.get_selected_prop()
-
-            new_prop_val = self.gui.entry_new_val.get_text()
-
-            # Update prop
-            set_device_prop(device['id'], prop['id'], new_prop_val)
-
-            # Update store
-            model, treeiter = self.gui.tree_props_selection.get_selected()
-            model[treeiter][2] = new_prop_val
-
-            # Close edit window
-            self.gui.win_edit.hide()
-
-        def on_btn_edit_cancel_clicked(self, button: Gtk.Button):
-            self.gui.win_edit.hide()
 
         # Settings window signals
 

@@ -32,6 +32,6 @@ setup(
     keywords='xinput keyboard mouse touchpad',
     packages=['xinput_gui'],
     install_requires=['PyGObject'],
-    package_data={'xinput_gui': ['app.glade']},
+    package_data={'xinput_gui': ['xinput-gui.ui']},
     entry_points={'gui_scripts': ['xinput-gui = xinput_gui.gui:main']}
 )
