@@ -223,6 +223,7 @@
                     <property name="can_focus">True</property>
                     <property name="model">store_props</property>
                     <property name="search_column">1</property>
+                    <signal name="row-activated" handler="on_tree_props_row_activated" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="tree_props_selection">
                         <signal name="changed" handler="on_prop_selected" swapped="no"/>

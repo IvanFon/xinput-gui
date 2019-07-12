@@ -163,6 +163,9 @@ class Gui:
         def on_prop_selected(self, selection: Gtk.TreeSelection):
             self.gui.btn_edit.set_sensitive(True)
 
+        def on_tree_props_row_activated(self, tree: Gtk.TreeView, index: int, column: Gtk.TreeViewColumn):
+            self.gui.btn_edit.clicked()
+
         def on_btn_edit_clicked(self, button: Gtk.Button):
             device = self.gui.get_selected_device()
             prop = self.gui.get_selected_prop()
