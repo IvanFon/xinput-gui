@@ -51,6 +51,8 @@ class Gui:
             "tree_devices_selection")
         self.tree_props_selection = builder.get_object(
             "tree_props_selection")
+        self.tree_column_devices_id = builder.get_object(
+            "tree_column_devices_id")
         self.tree_column_props_id = builder.get_object(
             "tree_column_props_id")
 
@@ -65,6 +67,7 @@ class Gui:
         self.win_settings = builder.get_object("win_settings")
         self.btn_settings_save = builder.get_object("btn_settings_save")
         self.chk_vertical_layout = builder.get_object("chk_vertical_layout")
+        self.chk_hide_device_ids = builder.get_object("chk_hide_device_ids")
         self.chk_hide_prop_ids = builder.get_object("chk_hide_prop_ids")
 
         self.refresh_devices()
@@ -127,6 +130,7 @@ class Gui:
     def show_settings_window(self):
         # Get settings and update controls
         self.chk_vertical_layout.set_active(self.settings.vertical_layout)
+        self.chk_hide_device_ids.set_active(self.settings.hide_device_ids)
         self.chk_hide_prop_ids.set_active(self.settings.hide_prop_ids)
 
         self.btn_settings_save.set_sensitive(False)
@@ -141,12 +145,15 @@ class Gui:
             self.box_main.set_orientation(Gtk.Orientation.HORIZONTAL)
             self.win_app.resize(800, 400)
 
+        # Hide device IDs
+        self.tree_column_devices_id.set_visible(not self.settings.hide_device_ids)
         # Hide prop IDs
         self.tree_column_props_id.set_visible(not self.settings.hide_prop_ids)
 
     def save_settings(self):
         # Get settings
         self.settings.vertical_layout = self.chk_vertical_layout.get_active()
+        self.settings.hide_device_ids = self.chk_hide_device_ids.get_active()
         self.settings.hide_prop_ids = self.chk_hide_prop_ids.get_active()
 
         self.settings.save_config()

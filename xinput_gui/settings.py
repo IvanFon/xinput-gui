@@ -30,6 +30,7 @@ class Settings:
         self.config = {}
 
         self.vertical_layout = False
+        self.hide_device_ids = True
         self.hide_prop_ids = True
 
         self.load_config()
@@ -41,12 +42,14 @@ class Settings:
             self.config = json.load(config_file)
 
         self.vertical_layout = self.config['vertical_layout']
+        self.hide_device_ids = self.config['hide_device_ids']
         self.hide_prop_ids = self.config['hide_prop_ids']
 
     def save_config(self):
         '''Save config file.'''
 
         self.config['vertical_layout'] = self.vertical_layout
+        self.config['hide_device_ids'] = self.hide_device_ids
         self.config['hide_prop_ids'] = self.hide_prop_ids
 
         with open(resource_filename('xinput_gui', 'config.json'),
