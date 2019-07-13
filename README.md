@@ -1,7 +1,7 @@
 # xinput-gui
 A simple GUI for Xorg's Xinput tool.
 
-| ![](https://user-images.githubusercontent.com/1174413/60917233-febf3180-a27f-11e9-852e-6719f4673b5c.png) | ![](https://user-images.githubusercontent.com/1174413/60917234-febf3180-a27f-11e9-844a-a8935d9d95b4.png) |
+| ![](https://user-images.githubusercontent.com/1174413/61175457-6c7c9d80-a59f-11e9-8010-f8d93785a249.png) | ![](https://user-images.githubusercontent.com/1174413/61175458-6d153400-a59f-11e9-935b-7ec68e19942a.png) |
 | --- | --- |
 
 xinput allows you to edit properties of devices like keyboards, mice, and touchpads. This GUI wraps around the xinput command to make editing them faster and more user-friendly.
