@@ -25,6 +25,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import resource_filename
 
+from .settings import Settings
 from .xinput import get_devices, get_device_props, set_device_prop
 
 
@@ -32,7 +33,9 @@ __version__ = '0.1.1'
 
 
 class Gui:
-    def __init__(self):
+    def __init__(self, settings: Settings):
+        self.settings = settings
+
         # Create interface
         builder = self.get_builder()
 
@@ -69,6 +72,8 @@ class Gui:
         # About window widgets
         self.win_about = builder.get_object("win_about")
         self.win_about.set_version(__version__)
+
+        self.apply_settings()
 
         Gtk.main()
 
@@ -127,18 +132,16 @@ class Gui:
         self.btn_settings_save.set_sensitive(False)
         self.win_settings.show_all()
 
+    def apply_settings(self):
+        self.tree_column_props_id.set_visible(not self.settings.hide_prop_ids)
+
     def save_settings(self):
         # Get settings
-        hide_prop_ids = self.chk_hide_prop_ids.get_active()
+        self.settings.hide_prop_ids = self.chk_hide_prop_ids.get_active()
 
-        # Save settings
-        # TODO
+        self.settings.save_config()
 
-        # Apply settings to active program
-        if hide_prop_ids:
-            self.tree_column_props_id.set_visible(False)
-        else:
-            self.tree_column_props_id.set_visible(True)
+        self.apply_settings()
 
     class SignalHandler:
         def __init__(self, gui):
@@ -164,7 +167,10 @@ class Gui:
         def on_prop_selected(self, selection: Gtk.TreeSelection):
             self.gui.btn_edit.set_sensitive(True)
 
-        def on_tree_props_row_activated(self, tree: Gtk.TreeView, index: int, column: Gtk.TreeViewColumn):
+        def on_tree_props_row_activated(self,
+                                        tree: Gtk.TreeView,
+                                        index: int,
+                                        column: Gtk.TreeViewColumn):
             self.gui.btn_edit.clicked()
 
         def on_btn_edit_clicked(self, button: Gtk.Button):
@@ -221,4 +227,4 @@ class Gui:
 
 def main():
     """Start xinput-gui."""
-    Gui()
+    Gui(Settings())
