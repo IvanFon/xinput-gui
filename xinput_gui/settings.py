@@ -18,9 +18,15 @@
 
 '''Application settings.'''
 
+from pathlib import Path
+from shutil import copyfile
 import json
+import os
 
 from pkg_resources import resource_filename
+
+
+CONFIG_PATH = Path(os.environ['HOME']).joinpath('.xinput-gui.json')
 
 
 class Settings:
@@ -38,7 +44,11 @@ class Settings:
     def load_config(self):
         '''Load config file.'''
 
-        with open(resource_filename('xinput_gui', 'config.json')) as config_file:
+        # Create config if needed
+        if not CONFIG_PATH.is_file():
+            copyfile(resource_filename('xinput_gui', 'config.json'), CONFIG_PATH)
+
+        with open(CONFIG_PATH) as config_file:
             self.config = json.load(config_file)
 
         self.vertical_layout = self.config['vertical_layout']
@@ -52,6 +62,5 @@ class Settings:
         self.config['hide_device_ids'] = self.hide_device_ids
         self.config['hide_prop_ids'] = self.hide_prop_ids
 
-        with open(resource_filename('xinput_gui', 'config.json'),
-                  'w', encoding='utf-8') as config_file:
+        with open(CONFIG_PATH, 'w', encoding='utf-8') as config_file:
             json.dump(self.config, config_file, indent=2)

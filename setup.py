@@ -6,7 +6,7 @@ with open('README.md') as f:
 
 setup(
     name='xinput-gui',
-    version='0.2.0',
+    version='0.2.1',
     description='A simple GUI for Xorg\'s Xinput tool.',
     long_description=long_description,
     long_description_content_type='text/markdown',
