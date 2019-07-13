@@ -113,6 +113,14 @@ class Gui:
 
     def get_selected_device(self) -> Dict[str, Union[str, int]]:
         model, treeiter = self.tree_devices_selection.get_selected()
+
+        if not treeiter:
+            return({
+                'id': None,
+                'name': None,
+                'type': None,
+            })
+
         return({
             'id': model[treeiter][0],
             'name': model[treeiter][1],
@@ -179,7 +187,11 @@ class Gui:
             self.gui.refresh_devices()
 
         def on_device_selected(self, selection: Gtk.TreeSelection):
-            self.gui.show_device(self.gui.get_selected_device()['id'])
+            selected_device = self.gui.get_selected_device()
+
+            if selected_device['id'] == None: return
+
+            self.gui.show_device(selected_device['id'])
 
         def on_prop_selected(self, selection: Gtk.TreeSelection):
             self.gui.btn_edit.set_sensitive(True)
