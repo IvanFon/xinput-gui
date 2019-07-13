@@ -33,5 +33,5 @@ setup(
     packages=['xinput_gui'],
     install_requires=['PyGObject'],
     package_data={'xinput_gui': ['xinput-gui.ui', 'config.json']},
-    entry_points={'gui_scripts': ['xinput-gui = xinput_gui.gui:main']}
+    entry_points={'gui_scripts': ['xinput-gui = xinput_gui.__main__:main']}
 )

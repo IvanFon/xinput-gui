@@ -23,13 +23,13 @@ from typing import Dict, Union
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from pkg_resources import resource_filename
+from pkg_resources import resource_filename, require
 
 from .settings import Settings
 from .xinput import get_devices, get_device_props, set_device_prop
 
 
-__version__ = '0.1.1'
+__version__ = require('xinput_gui')[0].version
 
 
 class Gui:
@@ -223,8 +223,3 @@ class Gui:
         def on_win_about_response(self, a, b):
             # TODO: close this properly
             self.gui.win_about.hide()
-
-
-def main():
-    """Start xinput-gui."""
-    Gui(Settings())
