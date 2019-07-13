@@ -43,6 +43,7 @@ class Gui:
 
         # Main window widgets
         self.win_app = builder.get_object("win_app")
+        self.box_main = builder.get_object("box_main")
         self.btn_edit = builder.get_object("btn_edit")
         self.store_devices = builder.get_object("store_devices")
         self.store_props = builder.get_object("store_props")
@@ -63,6 +64,7 @@ class Gui:
         # Settings window widgets
         self.win_settings = builder.get_object("win_settings")
         self.btn_settings_save = builder.get_object("btn_settings_save")
+        self.chk_vertical_layout = builder.get_object("chk_vertical_layout")
         self.chk_hide_prop_ids = builder.get_object("chk_hide_prop_ids")
 
         self.refresh_devices()
@@ -124,19 +126,27 @@ class Gui:
 
     def show_settings_window(self):
         # Get settings and update controls
-        if self.tree_column_props_id.get_visible():
-            self.chk_hide_prop_ids.set_active(False)
-        else:
-            self.chk_hide_prop_ids.set_active(True)
+        self.chk_vertical_layout.set_active(self.settings.vertical_layout)
+        self.chk_hide_prop_ids.set_active(self.settings.hide_prop_ids)
 
         self.btn_settings_save.set_sensitive(False)
         self.win_settings.show_all()
 
     def apply_settings(self):
+        # Vertical layout
+        if self.settings.vertical_layout:
+            self.box_main.set_orientation(Gtk.Orientation.VERTICAL)
+            self.win_app.resize(600, 600)
+        else:
+            self.box_main.set_orientation(Gtk.Orientation.HORIZONTAL)
+            self.win_app.resize(800, 400)
+
+        # Hide prop IDs
         self.tree_column_props_id.set_visible(not self.settings.hide_prop_ids)
 
     def save_settings(self):
         # Get settings
+        self.settings.vertical_layout = self.chk_vertical_layout.get_active()
         self.settings.hide_prop_ids = self.chk_hide_prop_ids.get_active()
 
         self.settings.save_config()
@@ -215,7 +225,7 @@ class Gui:
         def on_btn_settings_cancel_clicked(self, button: Gtk.Button):
             self.gui.win_settings.hide()
 
-        def on_chk_hide_prop_ids_toggled(self, chk_btn: Gtk.CheckButton):
+        def on_setting_changed(self, _):
             self.gui.btn_settings_save.set_sensitive(True)
 
         # About window signals
