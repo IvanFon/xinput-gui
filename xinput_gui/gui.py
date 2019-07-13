@@ -18,13 +18,14 @@
 
 '''Graphical user interface.'''
 
-from .xinput import get_devices, get_device_props, set_device_prop
-from pkg_resources import resource_filename
 from typing import Dict, Union
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from pkg_resources import resource_filename
+
+from .xinput import get_devices, get_device_props, set_device_prop
 
 
 __version__ = '0.1.1'
@@ -70,7 +71,7 @@ class Gui:
         self.win_about.set_version(__version__)
 
         Gtk.main()
-        
+
     def get_builder(self):
         return Gtk.Builder().new_from_file(resource_filename('xinput_gui', 'xinput-gui.ui'))
 
@@ -171,8 +172,10 @@ class Gui:
             prop = self.gui.get_selected_prop()
 
             # Setup dialog
-            self.gui.dialog_edit.get_message_area().get_children()[0].set_label(device['name'])
-            self.gui.dialog_edit.get_message_area().get_children()[1].set_label(prop['name'])
+            self.gui.dialog_edit.get_message_area().get_children()[
+                0].set_label(device['name'])
+            self.gui.dialog_edit.get_message_area().get_children()[
+                1].set_label(prop['name'])
             self.gui.entry_old_val.set_text(prop['val'])
             self.gui.entry_new_val.set_text(prop['val'])
             self.gui.entry_new_val.grab_focus()
