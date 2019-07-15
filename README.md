@@ -16,6 +16,18 @@ Available as a package on the AUR: [xinput-gui](https://aur.archlinux.org/packag
 
 Install it with `makepkg` or your preferred AUR helper.
 
+### Gentoo
+
+Available as a Gentoo package thanks to [@filalex77](https://github.com/filalex77): [app-misc/xinput-gui](https://github.com/filalex77/bright/tree/master/app-misc/xinput-gui)
+
+To install it, run the following commands:
+
+```
+eselect-repository enable bright
+emerge --sync
+emerge xinput-gui
+```
+
 ### pip
 
 Available on PyPI: [xinput-gui](https://pypi.org/project/xinput-gui/)
