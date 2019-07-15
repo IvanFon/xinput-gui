@@ -1,5 +1,6 @@
 {
   "vertical_layout": false,
+  "inline_prop_edit": true,
   "hide_device_ids": true,
   "hide_prop_ids": true
 }

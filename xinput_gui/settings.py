@@ -36,6 +36,7 @@ class Settings:
         self.config = {}
 
         self.vertical_layout = False
+        self.inline_prop_edit = True
         self.hide_device_ids = True
         self.hide_prop_ids = True
 
@@ -52,6 +53,7 @@ class Settings:
             self.config = json.load(config_file)
 
         self.vertical_layout = self.config['vertical_layout']
+        self.inline_prop_edit = self.config['inline_prop_edit']
         self.hide_device_ids = self.config['hide_device_ids']
         self.hide_prop_ids = self.config['hide_prop_ids']
 
@@ -59,6 +61,7 @@ class Settings:
         '''Save config file.'''
 
         self.config['vertical_layout'] = self.vertical_layout
+        self.config['inline_prop_edit'] = self.inline_prop_edit
         self.config['hide_device_ids'] = self.hide_device_ids
         self.config['hide_prop_ids'] = self.hide_prop_ids
 

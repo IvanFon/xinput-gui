@@ -291,7 +291,10 @@
                           <object class="GtkTreeViewColumn">
                             <property name="title" translatable="yes">Value</property>
                             <child>
-                              <object class="GtkCellRendererText"/>
+                              <object class="GtkCellRendererText" id="cell_prop_val">
+                                <property name="editable">True</property>
+                                <signal name="edited" handler="on_cell_prop_val_edited" swapped="no"/>
+                              </object>
                               <attributes>
                                 <attribute name="text">2</attribute>
                               </attributes>
@@ -525,6 +528,27 @@ Romain F. T.</property>
                     <property name="can_focus">True</property>
                     <property name="focus_on_click">False</property>
                     <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_setting_changed" swapped="no"/>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBoxRow">
+                <property name="width_request">100</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="activatable">False</property>
+                <property name="selectable">False</property>
+                <child>
+                  <object class="GtkCheckButton" id="chk_inline_prop_edit">
+                    <property name="label" translatable="yes">Edit property values inline</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_setting_changed" swapped="no"/>
                   </object>

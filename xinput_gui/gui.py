@@ -55,6 +55,7 @@ class Gui:
             "tree_column_devices_id")
         self.tree_column_props_id = builder.get_object(
             "tree_column_props_id")
+        self.cell_prop_val = builder.get_object("cell_prop_val")
 
         # Edit window widgets
         self.dialog_edit = builder.get_object("dialog_edit")
@@ -67,6 +68,7 @@ class Gui:
         self.win_settings = builder.get_object("win_settings")
         self.btn_settings_save = builder.get_object("btn_settings_save")
         self.chk_vertical_layout = builder.get_object("chk_vertical_layout")
+        self.chk_inline_prop_edit = builder.get_object("chk_inline_prop_edit")
         self.chk_hide_device_ids = builder.get_object("chk_hide_device_ids")
         self.chk_hide_prop_ids = builder.get_object("chk_hide_prop_ids")
 
@@ -133,11 +135,22 @@ class Gui:
             'id': model[treeiter][0],
             'name': model[treeiter][1],
             'val': model[treeiter][2],
-        })
+        }, model, treeiter)
+
+    def set_prop(self, new_val: str):
+        device = self.get_selected_device()
+        prop, model, treeiter = self.get_selected_prop()
+
+        # Update prop
+        set_device_prop(device['id'], prop['id'], new_val)
+
+        # Update store
+        model[treeiter][2] = new_val
 
     def show_settings_window(self):
         # Get settings and update controls
         self.chk_vertical_layout.set_active(self.settings.vertical_layout)
+        self.chk_inline_prop_edit.set_active(self.settings.inline_prop_edit)
         self.chk_hide_device_ids.set_active(self.settings.hide_device_ids)
         self.chk_hide_prop_ids.set_active(self.settings.hide_prop_ids)
 
@@ -153,6 +166,9 @@ class Gui:
             self.box_main.set_orientation(Gtk.Orientation.HORIZONTAL)
             self.win_app.resize(800, 400)
 
+        # Inline prop editing
+        self.cell_prop_val.set_property("editable", self.settings.inline_prop_edit)
+
         # Hide device IDs
         self.tree_column_devices_id.set_visible(not self.settings.hide_device_ids)
         # Hide prop IDs
@@ -161,6 +177,7 @@ class Gui:
     def save_settings(self):
         # Get settings
         self.settings.vertical_layout = self.chk_vertical_layout.get_active()
+        self.settings.inline_prop_edit = self.chk_inline_prop_edit.get_active()
         self.settings.hide_device_ids = self.chk_hide_device_ids.get_active()
         self.settings.hide_prop_ids = self.chk_hide_prop_ids.get_active()
 
@@ -204,7 +221,7 @@ class Gui:
 
         def on_btn_edit_clicked(self, button: Gtk.Button):
             device = self.gui.get_selected_device()
-            prop = self.gui.get_selected_prop()
+            prop, _, _ = self.gui.get_selected_prop()
 
             # Setup dialog
             self.gui.dialog_edit.get_message_area().get_children()[
@@ -221,14 +238,12 @@ class Gui:
             if res == Gtk.ResponseType.APPLY:
                 new_prop_val = self.gui.entry_new_val.get_text()
 
-                # Update prop
-                set_device_prop(device['id'], prop['id'], new_prop_val)
-
-                # Update store
-                model, treeiter = self.gui.tree_props_selection.get_selected()
-                model[treeiter][2] = new_prop_val
+                self.gui.set_prop(new_prop_val)
 
             self.gui.dialog_edit.hide()
+
+        def on_cell_prop_val_edited(self, renderer: Gtk.CellRendererText, path, new_text):
+            self.gui.set_prop(new_text)
 
         # Edit window signals
 
