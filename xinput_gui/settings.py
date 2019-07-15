@@ -47,7 +47,7 @@ class Settings:
 
         # Create config if needed
         if not CONFIG_PATH.is_file():
-            copyfile(resource_filename('xinput_gui', 'config.json'), CONFIG_PATH)
+            copyfile(resource_filename('xinput_gui', 'res/config.json'), CONFIG_PATH)
 
         with open(CONFIG_PATH) as config_file:
             self.config = json.load(config_file)

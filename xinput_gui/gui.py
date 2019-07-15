@@ -85,7 +85,7 @@ class Gui:
         Gtk.main()
 
     def get_builder(self):
-        return Gtk.Builder().new_from_file(resource_filename('xinput_gui', 'xinput-gui.ui'))
+        return Gtk.Builder().new_from_file(resource_filename('xinput_gui', 'res/xinput-gui.ui'))
 
     def refresh_devices(self):
         self.store_devices.clear()

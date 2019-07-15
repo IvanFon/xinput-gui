@@ -32,6 +32,6 @@ setup(
     keywords='xinput keyboard mouse touchpad',
     packages=['xinput_gui'],
     install_requires=['PyGObject'],
-    package_data={'xinput_gui': ['xinput-gui.ui', 'config.json']},
+    package_data={'xinput_gui': ['res/*']},
     entry_points={'gui_scripts': ['xinput-gui = xinput_gui.__main__:main']}
 )
