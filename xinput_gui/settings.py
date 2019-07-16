@@ -33,6 +33,8 @@ class Settings:
     '''Loads and stores application settings.'''
 
     def __init__(self):
+        '''Init Settings.'''
+
         self.config = {}
 
         self.vertical_layout = False
@@ -52,10 +54,10 @@ class Settings:
         with open(CONFIG_PATH) as config_file:
             self.config = json.load(config_file)
 
-        self.vertical_layout = self.config['vertical_layout']
-        self.inline_prop_edit = self.config['inline_prop_edit']
-        self.hide_device_ids = self.config['hide_device_ids']
-        self.hide_prop_ids = self.config['hide_prop_ids']
+        self.vertical_layout = self.config.get('vertical_layout', self.vertical_layout)
+        self.inline_prop_edit = self.config.get('inline_prop_edit', self.inline_prop_edit)
+        self.hide_device_ids = self.config.get('hide_device_ids', self.hide_device_ids)
+        self.hide_prop_ids = self.config.get('hide_prop_ids', self.hide_prop_ids)
 
     def save_config(self):
         '''Save config file.'''
