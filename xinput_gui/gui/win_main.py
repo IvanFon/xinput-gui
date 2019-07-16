@@ -53,6 +53,7 @@ class MainWindow:
         self.btn_edit = builder.get_object('btn_edit')
         self.store_devices = builder.get_object('store_devices')
         self.store_props = builder.get_object('store_props')
+        self.tree_devices = builder.get_object('tree_devices')
         self.tree_devices_selection = builder.get_object(
             'tree_devices_selection')
         self.tree_props_selection = builder.get_object(
@@ -66,7 +67,7 @@ class MainWindow:
         self.apply_settings()
 
         self.refresh_devices()
-        self.win_main.set_title("Xinput GUI {}".format(__version__))
+        self.win_main.set_title('Xinput GUI {}'.format(__version__))
         self.win_main.show_all()
 
         self.about_dialog = AboutDialog(self)
@@ -93,12 +94,21 @@ class MainWindow:
         self.tree_props_selection.unselect_all()
         self.btn_edit.set_sensitive(False)
 
+        master_iter = None
         for device in get_devices():
-            self.store_devices.append(None, [
+            device_row = [
                 int(device['id']),
                 device['name'],
                 device['type']
-            ])
+            ]
+
+            cur_iter = self.store_devices.append(master_iter, device_row)
+
+            if device['master']:
+                self.store_devices.remove(cur_iter)
+                master_iter = self.store_devices.append(None, device_row)
+
+        self.tree_devices.expand_all()
 
     def show_device(self, device_id: int) -> None:
         '''Display properties of given device.
@@ -193,7 +203,7 @@ class MainWindow:
             self.win_main.resize(800, 400)
 
         # Inline prop editing
-        self.cell_prop_val.set_property("editable", self.settings.inline_prop_edit)
+        self.cell_prop_val.set_property('editable', self.settings.inline_prop_edit)
 
         # Hide device IDs
         self.tree_column_devices_id.set_visible(not self.settings.hide_device_ids)
