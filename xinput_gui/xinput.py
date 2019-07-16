@@ -105,3 +105,17 @@ def set_device_prop(device_id: int, prop_id: int, prop_val: str):
     # TODO: proper error handling
     print(cmd)
     print(cmd_out)
+
+def create_master_device(name: str):
+    '''Creates a new xinput master device.
+
+    Args:
+        name: Name for new device, str
+    '''
+
+    cmd = 'xinput create-master "{}"'.format(name)
+    cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+
+    # TODO: proper error handling
+    print(cmd)
+    print(cmd_out)

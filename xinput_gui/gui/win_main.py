@@ -28,6 +28,7 @@ from pkg_resources import require, resource_filename
 from ..settings import Settings
 from ..xinput import get_devices, get_device_props, set_device_prop
 from .dialog_about import AboutDialog
+from .dialog_create_master import CreateMasterDialog
 from .dialog_edit import EditDialog
 from .win_settings import SettingsWindow
 
@@ -71,6 +72,7 @@ class MainWindow:
         self.win_main.show_all()
 
         self.about_dialog = AboutDialog(self)
+        self.create_master_dialog = CreateMasterDialog(self)
         self.edit_dialog = EditDialog(self)
         self.settings_window = SettingsWindow(self, settings)
 
@@ -228,6 +230,11 @@ class MainWindow:
 
         self.about_dialog.show()
 
+    def show_create_master_dialog(self) -> None:
+        '''Shows the create master dialog.'''
+
+        self.create_master_dialog.show()
+
     class SignalHandler:
         '''Handle main window signals.'''
 
@@ -283,7 +290,7 @@ class MainWindow:
         def on_tool_create_master_clicked(self, *args) -> None:
             '''tool_create_master "clicked" signal.'''
 
-            print('create_master')
+            self.gui.show_create_master_dialog()
 
         def on_tool_remove_master_clicked(self, *args) -> None:
             '''tool_remove_master "clicked" signal.'''
