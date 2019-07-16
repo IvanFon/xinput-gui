@@ -251,11 +251,6 @@ class MainWindow:
 
             self.gui.show_about_dialog()
 
-        def on_btn_refresh_clicked(self, *args) -> None:
-            '''btn_refresh "clicked" signal.'''
-
-            self.gui.refresh_devices()
-
         def on_device_selected(self, selection: Gtk.TreeSelection) -> None:
             '''tree_devices_selection "changed" signal.'''
 
@@ -284,3 +279,23 @@ class MainWindow:
             '''cell_prop_val "edited" signal.'''
 
             self.gui.set_prop(new_text)
+
+        def on_tool_create_master_clicked(self, *args) -> None:
+            '''tool_create_master "clicked" signal.'''
+
+            print('create_master')
+
+        def on_tool_remove_master_clicked(self, *args) -> None:
+            '''tool_remove_master "clicked" signal.'''
+
+            print('remove_master')
+
+        def on_tool_reattach_slave_clicked(self, *args) -> None:
+            '''tool_reattach_slave "clicked" signal.'''
+
+            print('reattach_slave')
+
+        def on_tool_refresh_devices_clicked(self, *args) -> None:
+            '''tool_refresh "clicked" signal.'''
+
+            self.gui.refresh_devices()
