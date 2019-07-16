@@ -163,7 +163,7 @@ Romain F. T.</property>
       <action-widget response="-10">btn_edit_apply</action-widget>
     </action-widgets>
   </object>
-  <object class="GtkListStore" id="store_devices">
+  <object class="GtkTreeStore" id="store_devices">
     <columns>
       <!-- column-name id -->
       <column type="guint"/>
@@ -173,7 +173,7 @@ Romain F. T.</property>
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkListStore" id="store_props">
+  <object class="GtkTreeStore" id="store_props">
     <columns>
       <!-- column-name id -->
       <column type="guint"/>

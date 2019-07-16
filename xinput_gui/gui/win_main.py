@@ -94,7 +94,7 @@ class MainWindow:
         self.btn_edit.set_sensitive(False)
 
         for device in get_devices():
-            self.store_devices.append([
+            self.store_devices.append(None, [
                 int(device['id']),
                 device['name'],
                 device['type']
@@ -115,7 +115,7 @@ class MainWindow:
         self.btn_edit.set_sensitive(False)
 
         for prop in get_device_props(device_id):
-            self.store_props.append([
+            self.store_props.append(None, [
                 int(prop['id']),
                 prop['name'],
                 prop['val']
