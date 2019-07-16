@@ -23,14 +23,15 @@ import re
 import subprocess
 
 
-def get_devices() -> List[Dict[str, Union[str, int]]]:
+def get_devices() -> List[Dict[str, Union[str, int, bool]]]:
     '''Gets a list of xinput devices.
 
     Returns:
         A list containing one dict entry per device. Each device has:
-            - 'id': device ID, int
-            - 'name': device name, str
-            - 'type': device type, str
+            - id: device ID, int
+            - name: device name, str
+            - master: if device is a master device, bool
+            - type: device type, str
     '''
 
     device_id_cmd = 'xinput list --id-only'
@@ -46,17 +47,18 @@ def get_devices() -> List[Dict[str, Union[str, int]]]:
 
         device_type_cmd = 'xinput list --short {}'.format(device_id)
         device_type_out = subprocess.check_output(device_type_cmd, shell=True)
-        matches = re.search(r'\[(.+)\(.+\)\]', device_type_out.decode('utf-8'))
-        device_type = matches.group(1).strip()
+        matches = re.search(r'\[(\w+)\s+(\w+).+\(.+\)\]', device_type_out.decode('utf-8'))
+        device_master = matches.group(1).strip() == 'master'
+        device_type = matches.group(2).strip()
 
         devices.append({
             'id': device_id,
             'name': device_name,
+            'master': device_master,
             'type': device_type,
         })
 
     return devices
-
 
 def get_device_props(device_id: int) -> List[Dict[str, Union[str, int]]]:
     '''Gets a list of properties for a given xinput device.
@@ -87,7 +89,6 @@ def get_device_props(device_id: int) -> List[Dict[str, Union[str, int]]]:
         })
 
     return props
-
 
 def set_device_prop(device_id: int, prop_id: int, prop_val: str):
     '''Sets an xinput device property.
