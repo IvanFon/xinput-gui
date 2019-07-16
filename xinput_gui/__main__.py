@@ -20,12 +20,13 @@
 
 import pkg_resources
 
-from .gui import Gui
 from .settings import Settings
+from .gui.win_main import MainWindow
 
 
 def main():
     '''Start xinput-gui.'''
+
     settings = Settings()
 
-    Gui(settings)
+    MainWindow(settings)
