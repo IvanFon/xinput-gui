@@ -30,6 +30,7 @@ class EditDialog:
     '''Edit dialog.'''
 
     def __init__(self, main_window) -> None:
+        '''Init EditDialog.'''
 
         self.main_window = main_window
 

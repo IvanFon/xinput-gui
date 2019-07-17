@@ -1,1 +1,1 @@
-"""A simple GUI for Xorg's Xinput tool."""
+'''A simple GUI for Xorg's Xinput tool.'''
