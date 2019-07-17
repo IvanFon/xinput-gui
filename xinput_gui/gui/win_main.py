@@ -51,7 +51,6 @@ class MainWindow:
         self.win_main = builder.get_object('win_main')
         self.win_main = builder.get_object('win_main')
         self.box_main = builder.get_object('box_main')
-        self.btn_edit = builder.get_object('btn_edit')
         self.store_devices = builder.get_object('store_devices')
         self.store_props = builder.get_object('store_props')
         self.tree_devices = builder.get_object('tree_devices')
@@ -65,6 +64,7 @@ class MainWindow:
             'tree_column_props_id')
         self.cell_prop_val = builder.get_object('cell_prop_val')
         self.tool_remove_master = builder.get_object('tool_remove_master')
+        self.tool_edit_prop = builder.get_object('tool_edit_prop')
 
         self.apply_settings()
 
@@ -95,7 +95,7 @@ class MainWindow:
         self.store_props.clear()
         self.tree_devices_selection.unselect_all()
         self.tree_props_selection.unselect_all()
-        self.btn_edit.set_sensitive(False)
+        self.tool_edit_prop.set_sensitive(False)
 
         master_iter = None
         for device in get_devices():
@@ -130,7 +130,7 @@ class MainWindow:
 
         self.store_props.clear()
         self.tree_props_selection.unselect_all()
-        self.btn_edit.set_sensitive(False)
+        self.tool_edit_prop.set_sensitive(False)
 
         for prop in get_device_props(device_id):
             self.store_props.append(None, [
@@ -293,15 +293,15 @@ class MainWindow:
         def on_prop_selected(self, *args) -> None:
             '''tree_props_selection "changed" signal.'''
 
-            self.gui.btn_edit.set_sensitive(True)
+            self.gui.tool_edit_prop.set_sensitive(True)
 
         def on_tree_props_row_activated(self, *args) -> None:
             '''tree_props "row-activated" signal.'''
 
-            self.gui.btn_edit.clicked()
+            self.gui.tool_edit_prop.clicked()
 
-        def on_btn_edit_clicked(self, *args) -> None:
-            '''btn_edit "clicked" signal.'''
+        def on_tool_edit_prop_clicked(self, *args) -> None:
+            '''tool_edit_prop "clicked" signal.'''
 
             self.gui.show_edit_dialog()
 
