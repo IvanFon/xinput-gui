@@ -469,6 +469,7 @@ Romain F. T.</property>
                     <child>
                       <object class="GtkToolButton" id="tool_remove_master">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Remove master device</property>
                         <property name="label" translatable="yes">Remove Master</property>

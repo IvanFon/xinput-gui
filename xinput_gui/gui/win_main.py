@@ -26,7 +26,7 @@ from gi.repository import Gtk
 from pkg_resources import require, resource_filename
 
 from ..settings import Settings
-from ..xinput import get_devices, get_device_props, set_device_prop
+from ..xinput import get_devices, get_device_props, remove_master_device, set_device_prop
 from .dialog_about import AboutDialog
 from .dialog_create_master import CreateMasterDialog
 from .dialog_edit import EditDialog
@@ -64,6 +64,7 @@ class MainWindow:
         self.tree_column_props_id = builder.get_object(
             'tree_column_props_id')
         self.cell_prop_val = builder.get_object('cell_prop_val')
+        self.tool_remove_master = builder.get_object('tool_remove_master')
 
         self.apply_settings()
 
@@ -101,7 +102,7 @@ class MainWindow:
             device_row = [
                 int(device['id']),
                 device['name'],
-                device['type']
+                device['type'],
             ]
 
             cur_iter = self.store_devices.append(master_iter, device_row)
@@ -112,15 +113,20 @@ class MainWindow:
 
         self.tree_devices.expand_all()
 
-    def show_device(self, device_id: int) -> None:
-        '''Display properties of given device.
+    def show_device(self, selection: Gtk.TreeSelection) -> None:
+        '''Display properties of selected device.
 
         Args:
-            device_id: The xinput device ID.
+            selection: The TreeSelection for the selected device.
         '''
+
+        model, treeiter = selection.get_selected()
+        device_id = model[treeiter][0]
 
         if device_id is None:
             return
+
+        # Show props
 
         self.store_props.clear()
         self.tree_props_selection.unselect_all()
@@ -133,6 +139,12 @@ class MainWindow:
                 prop['val']
             ])
 
+        # Check if device is master
+        if self.store_devices.iter_depth(treeiter) == 0:
+            self.tool_remove_master.set_sensitive(True)
+        else:
+            self.tool_remove_master.set_sensitive(False)
+
     def get_selected_device(self) -> Dict[str, Union[str, int]]:
         '''Get the currently selected device.
 
@@ -141,6 +153,7 @@ class MainWindow:
                 - id: device ID, int
                 - name: device name, str
                 - type: device type, str
+                - master: if device is master, bool
 
             If no device is selected, all dict values will be None.
         '''
@@ -152,12 +165,14 @@ class MainWindow:
                 'id': None,
                 'name': None,
                 'type': None,
+                'master': None,
             })
 
         return({
             'id': model[treeiter][0],
             'name': model[treeiter][1],
             'type': model[treeiter][2],
+            'master': self.store_devices.iter_depth(treeiter) == 0,
         })
 
     def get_selected_prop(self) -> Dict[str, Union[str, int]]:
@@ -192,6 +207,18 @@ class MainWindow:
 
         # Update store
         model[treeiter][2] = new_val
+
+    def remove_selected_master(self) -> None:
+        '''Remove selected master device.'''
+
+        device = self.get_selected_device()
+
+        if not device['master']:
+            return
+
+        remove_master_device(device['id'])
+
+        self.refresh_devices()
 
     def apply_settings(self) -> None:
         '''Apply current settings.'''
@@ -261,8 +288,7 @@ class MainWindow:
         def on_device_selected(self, selection: Gtk.TreeSelection) -> None:
             '''tree_devices_selection "changed" signal.'''
 
-            model, treeiter = selection.get_selected()
-            self.gui.show_device(model[treeiter][0])
+            self.gui.show_device(selection)
 
         def on_prop_selected(self, *args) -> None:
             '''tree_props_selection "changed" signal.'''
@@ -295,7 +321,7 @@ class MainWindow:
         def on_tool_remove_master_clicked(self, *args) -> None:
             '''tool_remove_master "clicked" signal.'''
 
-            print('remove_master')
+            self.gui.remove_selected_master()
 
         def on_tool_reattach_slave_clicked(self, *args) -> None:
             '''tool_reattach_slave "clicked" signal.'''

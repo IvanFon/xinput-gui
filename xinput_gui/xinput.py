@@ -119,3 +119,17 @@ def create_master_device(name: str):
     # TODO: proper error handling
     print(cmd)
     print(cmd_out)
+
+def remove_master_device(device_id: int):
+    '''Removes a master xinput device.
+
+    Args:
+        device_id: ID of xinput master device to remove.
+    '''
+
+    cmd = 'xinput remove-master {}'.format(device_id)
+    cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+
+    # TODO: proper error handling
+    print(cmd)
+    print(cmd_out)
