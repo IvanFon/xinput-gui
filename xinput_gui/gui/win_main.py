@@ -298,7 +298,7 @@ class MainWindow:
         def on_tree_props_row_activated(self, *args) -> None:
             '''tree_props "row-activated" signal.'''
 
-            self.gui.tool_edit_prop.clicked()
+            self.gui.show_edit_dialog()
 
         def on_tool_edit_prop_clicked(self, *args) -> None:
             '''tool_edit_prop "clicked" signal.'''
