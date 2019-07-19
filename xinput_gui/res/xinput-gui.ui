@@ -638,6 +638,7 @@ Romain F. T.</property>
                     <child>
                       <object class="GtkToolButton" id="tool_refresh_props">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Refresh properties</property>
                         <property name="label" translatable="yes">Refresh properties</property>

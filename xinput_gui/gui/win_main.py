@@ -67,6 +67,7 @@ class MainWindow:
         self.cell_prop_val = builder.get_object('cell_prop_val')
         self.tool_remove_master = builder.get_object('tool_remove_master')
         self.tool_edit_prop = builder.get_object('tool_edit_prop')
+        self.tool_refresh_props = builder.get_object('tool_refresh_props')
 
         self.apply_settings()
 
@@ -99,7 +100,9 @@ class MainWindow:
         self.store_props.clear()
         self.tree_devices_selection.unselect_all()
         self.tree_props_selection.unselect_all()
+        self.tool_remove_master.set_sensitive(False)
         self.tool_edit_prop.set_sensitive(False)
+        self.tool_refresh_props.set_sensitive(False)
 
         master_iter = None
         for device in self.xinput.devices:
@@ -143,6 +146,7 @@ class MainWindow:
         self.store_props.clear()
         self.tree_props_selection.unselect_all()
         self.tool_edit_prop.set_sensitive(False)
+        self.tool_refresh_props.set_sensitive(True)
 
         for prop in self.xinput.get_device_by_id(device_id).props:
             self.store_props.append(None, [
