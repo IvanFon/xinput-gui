@@ -107,3 +107,33 @@ class Device:
         # TODO: error handling
         print(cmd)
         print(cmd_out)
+
+    def float(self) -> None:
+        '''Float slave device.'''
+
+        if self.master:
+            return
+
+        cmd = 'xinput float {}'.format(self.id)
+        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+
+        # TODO: proper error handling
+        print(cmd)
+        print(cmd_out)
+
+    def reattach(self, master_id: int) -> None:
+        '''Reattach device to master.
+
+        Args:
+            master_id: ID of xinput master device to reattach slave device to.
+        '''
+
+        if self.master:
+            return
+
+        cmd = 'xinput reattach {} {}'.format(self.id, master_id)
+        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+
+        # TODO: proper error handling
+        print(cmd)
+        print(cmd_out)

@@ -30,6 +30,7 @@ from ..xinput.xinput import Xinput
 from .dialog_about import AboutDialog
 from .dialog_create_master import CreateMasterDialog
 from .dialog_edit import EditDialog
+from .dialog_reattach import ReattachDialog
 from .win_settings import SettingsWindow
 
 
@@ -77,6 +78,7 @@ class MainWindow:
 
         self.about_dialog = AboutDialog(self)
         self.create_master_dialog = CreateMasterDialog(self, xinput)
+        self.dialog_reattach = ReattachDialog(self, xinput)
         self.edit_dialog = EditDialog(self)
         self.settings_window = SettingsWindow(self, settings)
 
@@ -278,10 +280,15 @@ class MainWindow:
 
         self.create_master_dialog.show()
 
+    def show_reattach_dialog(self) -> None:
+        '''Show the reattach dialog.'''
+
+        self.dialog_reattach.show(self.get_selected_device())
+
     class SignalHandler:
         '''Handle main window signals.'''
 
-        def __init__(self, gui):
+        def __init__(self, gui) -> None:
             '''Init SignalHandler.'''
 
             self.gui = gui
@@ -340,7 +347,7 @@ class MainWindow:
         def on_tool_reattach_slave_clicked(self, *args) -> None:
             '''tool_reattach_slave "clicked" signal.'''
 
-            print('reattach_slave')
+            self.gui.show_reattach_dialog()
 
         def on_tool_refresh_devices_clicked(self, *args) -> None:
             '''tool_refresh_devices "clicked" signal.'''
