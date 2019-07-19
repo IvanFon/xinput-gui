@@ -44,6 +44,7 @@ class MainWindow:
 
         self.settings = settings
         self.xinput = xinput
+        self.refreshing = False
 
         builder = self.get_builder()
 
@@ -92,6 +93,8 @@ class MainWindow:
     def refresh_devices(self) -> None:
         '''Refresh the device list.'''
 
+        self.refreshing = True
+
         self.store_devices.clear()
         self.store_props.clear()
         self.tree_devices_selection.unselect_all()
@@ -113,6 +116,8 @@ class MainWindow:
                 master_iter = self.store_devices.append(None, device_row)
 
         self.tree_devices.expand_all()
+
+        self.refreshing = False
 
     def show_device(self, selection: Gtk.TreeSelection) -> None:
         '''Display properties of selected device.
@@ -288,6 +293,9 @@ class MainWindow:
 
         def on_device_selected(self, selection: Gtk.TreeSelection) -> None:
             '''tree_devices_selection "changed" signal.'''
+
+            if self.gui.refreshing:
+                return
 
             self.gui.show_device(selection)
 
