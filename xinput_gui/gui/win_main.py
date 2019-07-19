@@ -119,6 +119,12 @@ class MainWindow:
 
         self.refreshing = False
 
+    def refresh_props(self) -> None:
+        '''Refresh properties of currently selected device.'''
+
+        self.xinput.get_device_by_id(self.get_selected_device()['id']).get_props()
+        self.show_device(self.tree_devices_selection)
+
     def show_device(self, selection: Gtk.TreeSelection) -> None:
         '''Display properties of selected device.
 
@@ -309,11 +315,6 @@ class MainWindow:
 
             self.gui.show_edit_dialog()
 
-        def on_tool_edit_prop_clicked(self, *args) -> None:
-            '''tool_edit_prop "clicked" signal.'''
-
-            self.gui.show_edit_dialog()
-
         def on_cell_prop_val_edited(self,
                                     renderer: Gtk.CellRendererText,
                                     path: str,
@@ -338,6 +339,16 @@ class MainWindow:
             print('reattach_slave')
 
         def on_tool_refresh_devices_clicked(self, *args) -> None:
-            '''tool_refresh "clicked" signal.'''
+            '''tool_refresh_devices "clicked" signal.'''
 
             self.gui.refresh_devices()
+
+        def on_tool_edit_prop_clicked(self, *args) -> None:
+            '''tool_edit_prop "clicked" signal.'''
+
+            self.gui.show_edit_dialog()
+
+        def on_tool_refresh_props_clicked(self, *args) -> None:
+            '''tool_refresh_props "clicked" signal.'''
+
+            self.gui.refresh_props()
