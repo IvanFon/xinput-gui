@@ -18,15 +18,14 @@
 
 '''App entry point.'''
 
-import pkg_resources
-
-from .settings import Settings
 from .gui.win_main import MainWindow
+from .settings import Settings
+from .xinput.xinput import Xinput
 
 
 def main():
     '''Start xinput-gui.'''
 
     settings = Settings()
-
-    MainWindow(settings)
+    xinput = Xinput()
+    MainWindow(settings, xinput)

@@ -23,16 +23,17 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import resource_filename
 
-from ..xinput import create_master_device
+from ..xinput.xinput import Xinput
 
 
 class CreateMasterDialog:
     '''Create master device dialog.'''
 
-    def __init__(self, main_window) -> None:
+    def __init__(self, main_window, xinput: Xinput) -> None:
         '''Init CreateMasterDialog.'''
 
         self.main_window = main_window
+        self.xinput = xinput
 
         builder = self.get_builder()
 
@@ -69,7 +70,7 @@ class CreateMasterDialog:
         if res == Gtk.ResponseType.APPLY:
             new_master_name = self.entry_new_master_name.get_text()
 
-            create_master_device(new_master_name)
+            self.xinput.create_master_device(new_master_name)
             self.main_window.refresh_devices()
 
         self.dialog_create_master.hide()

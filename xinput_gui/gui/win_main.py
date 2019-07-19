@@ -26,7 +26,7 @@ from gi.repository import Gtk
 from pkg_resources import require, resource_filename
 
 from ..settings import Settings
-from ..xinput import get_devices, get_device_props, remove_master_device, set_device_prop
+from ..xinput.xinput import Xinput
 from .dialog_about import AboutDialog
 from .dialog_create_master import CreateMasterDialog
 from .dialog_edit import EditDialog
@@ -39,10 +39,11 @@ __version__ = require('xinput_gui')[0].version
 class MainWindow:
     '''Main app window.'''
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, xinput: Xinput) -> None:
         '''Init MainWindow.'''
 
         self.settings = settings
+        self.xinput = xinput
 
         builder = self.get_builder()
 
@@ -73,7 +74,7 @@ class MainWindow:
         self.win_main.show_all()
 
         self.about_dialog = AboutDialog(self)
-        self.create_master_dialog = CreateMasterDialog(self)
+        self.create_master_dialog = CreateMasterDialog(self, xinput)
         self.edit_dialog = EditDialog(self)
         self.settings_window = SettingsWindow(self, settings)
 
@@ -98,16 +99,16 @@ class MainWindow:
         self.tool_edit_prop.set_sensitive(False)
 
         master_iter = None
-        for device in get_devices():
+        for device in self.xinput.devices:
             device_row = [
-                int(device['id']),
-                device['name'],
-                device['type'],
+                int(device.id),
+                device.name,
+                device.type.value,
             ]
 
             cur_iter = self.store_devices.append(master_iter, device_row)
 
-            if device['master']:
+            if device.master:
                 self.store_devices.remove(cur_iter)
                 master_iter = self.store_devices.append(None, device_row)
 
@@ -132,11 +133,11 @@ class MainWindow:
         self.tree_props_selection.unselect_all()
         self.tool_edit_prop.set_sensitive(False)
 
-        for prop in get_device_props(device_id):
+        for prop in self.xinput.get_device_by_id(device_id).props:
             self.store_props.append(None, [
-                int(prop['id']),
-                prop['name'],
-                prop['val']
+                int(prop.id),
+                prop.name,
+                prop.val,
             ])
 
         # Check if device is master
@@ -203,7 +204,7 @@ class MainWindow:
         prop, model, treeiter = self.get_selected_prop()
 
         # Update prop
-        set_device_prop(device['id'], prop['id'], new_val)
+        self.xinput.get_device_by_id(device['id']).set_prop(prop['id'], new_val)
 
         # Update store
         model[treeiter][2] = new_val
@@ -216,7 +217,7 @@ class MainWindow:
         if not device['master']:
             return
 
-        remove_master_device(device['id'])
+        self.xinput.remove_master_device(device['id'])
 
         self.refresh_devices()
 
