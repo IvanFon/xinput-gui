@@ -23,6 +23,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import resource_filename
 
+from ..xinput.devices import DeviceType
 from ..xinput.xinput import Xinput
 
 
@@ -67,9 +68,10 @@ class ReattachDialog:
 
         labels = self.dialog_reattach.get_message_area().get_children()
         labels[1].set_label(selected_device['name'])
-        self.rad_float_device.set_active(True)
+        self.rad_float_device.set_sensitive(not device.type == DeviceType.FLOATING)
+        self.rad_float_device.set_active(not device.type == DeviceType.FLOATING)
         self.rad_reattach_device.set_sensitive(False)
-        self.cmb_reattach_device.set_sensitive(False)
+        self.rad_reattach_device.set_active(device.type == DeviceType.FLOATING)
 
         self.store_reattach.clear()
         for d in self.xinput.devices:
