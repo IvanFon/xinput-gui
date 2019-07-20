@@ -92,4 +92,6 @@ class ReattachDialog:
 
                 device.reattach(master_id)
 
+            self.main_window.refresh_devices()
+
         self.dialog_reattach.hide()

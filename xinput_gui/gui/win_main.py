@@ -26,6 +26,7 @@ from gi.repository import Gtk
 from pkg_resources import require, resource_filename
 
 from ..settings import Settings
+from ..xinput.devices import DeviceType
 from ..xinput.xinput import Xinput
 from .dialog_about import AboutDialog
 from .dialog_create_master import CreateMasterDialog
@@ -99,6 +100,8 @@ class MainWindow:
 
         self.refreshing = True
 
+        self.xinput.get_devices()
+
         self.store_devices.clear()
         self.store_props.clear()
         self.tree_devices_selection.unselect_all()
@@ -108,6 +111,7 @@ class MainWindow:
         self.tool_refresh_props.set_sensitive(False)
 
         master_iter = None
+        floating_devices = []
         for device in self.xinput.devices:
             device_row = [
                 int(device.id),
@@ -115,11 +119,18 @@ class MainWindow:
                 device.type.value,
             ]
 
+            if device.type == DeviceType.FLOATING:
+                floating_devices.append(device_row)
+                continue
+
             cur_iter = self.store_devices.append(master_iter, device_row)
 
             if device.master:
                 self.store_devices.remove(cur_iter)
                 master_iter = self.store_devices.append(None, device_row)
+
+        for device in floating_devices:
+            self.store_devices.append(None, device)
 
         self.tree_devices.expand_all()
 
