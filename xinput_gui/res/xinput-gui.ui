@@ -488,7 +488,7 @@ Romain F. T.</property>
                         <property name="tooltip_text" translatable="yes">Reattach slave device</property>
                         <property name="label" translatable="yes">Reattach</property>
                         <property name="use_underline">True</property>
-                        <property name="stock_id">gtk-disconnect</property>
+                        <property name="icon_name">gtk-connect</property>
                         <signal name="clicked" handler="on_tool_reattach_slave_clicked" swapped="no"/>
                       </object>
                       <packing>

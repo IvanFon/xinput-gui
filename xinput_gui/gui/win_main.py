@@ -69,6 +69,7 @@ class MainWindow:
             'tree_column_props_id')
         self.cell_prop_val = builder.get_object('cell_prop_val')
         self.tool_remove_master = builder.get_object('tool_remove_master')
+        self.tool_reattach_slave = builder.get_object('tool_reattach_slave')
         self.tool_edit_prop = builder.get_object('tool_edit_prop')
         self.tool_refresh_props = builder.get_object('tool_refresh_props')
 
@@ -156,6 +157,8 @@ class MainWindow:
         if device_id is None:
             return
 
+        device = self.xinput.get_device_by_id(device_id)
+
         # Show props
 
         self.store_props.clear()
@@ -163,7 +166,7 @@ class MainWindow:
         self.tool_edit_prop.set_sensitive(False)
         self.tool_refresh_props.set_sensitive(True)
 
-        for prop in self.xinput.get_device_by_id(device_id).props:
+        for prop in device.props:
             self.store_props.append(None, [
                 int(prop.id),
                 prop.name,
@@ -173,10 +176,18 @@ class MainWindow:
         self.tree_props.scroll_to_point(0, 0)
 
         # Check if device is master
-        if self.store_devices.iter_depth(treeiter) == 0:
+        if device.master:
             self.tool_remove_master.set_sensitive(True)
+            self.tool_reattach_slave.set_sensitive(False)
         else:
             self.tool_remove_master.set_sensitive(False)
+            self.tool_reattach_slave.set_sensitive(True)
+
+        # Check if device is floating
+        if device.type == DeviceType.FLOATING:
+            self.tool_reattach_slave.set_icon_name('gtk-connect')
+        else:
+            self.tool_reattach_slave.set_icon_name('gtk-disconnect')
 
     def get_selected_device(self) -> Dict[str, Union[str, int]]:
         '''Get the currently selected device.
