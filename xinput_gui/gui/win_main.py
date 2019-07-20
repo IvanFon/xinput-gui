@@ -59,6 +59,7 @@ class MainWindow:
         self.tree_devices = builder.get_object('tree_devices')
         self.tree_devices_selection = builder.get_object(
             'tree_devices_selection')
+        self.tree_props = builder.get_object('tree_props')
         self.tree_props_selection = builder.get_object(
             'tree_props_selection')
         self.tree_column_devices_id = builder.get_object(
@@ -129,6 +130,7 @@ class MainWindow:
 
         self.xinput.get_device_by_id(self.get_selected_device()['id']).get_props()
         self.show_device(self.tree_devices_selection)
+        self.tree_props.scroll_to_point(0, 0)
 
     def show_device(self, selection: Gtk.TreeSelection) -> None:
         '''Display properties of selected device.
@@ -156,6 +158,8 @@ class MainWindow:
                 prop.name,
                 prop.val,
             ])
+
+        self.tree_props.scroll_to_point(0, 0)
 
         # Check if device is master
         if self.store_devices.iter_depth(treeiter) == 0:
