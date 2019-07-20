@@ -30,6 +30,7 @@ from ..xinput.devices import DeviceType
 from ..xinput.xinput import Xinput
 from .dialog_about import AboutDialog
 from .dialog_create_master import CreateMasterDialog
+from .dialog_device_info import DeviceInfoDialog
 from .dialog_edit import EditDialog
 from .dialog_reattach import ReattachDialog
 from .win_settings import SettingsWindow
@@ -81,6 +82,7 @@ class MainWindow:
 
         self.about_dialog = AboutDialog(self)
         self.create_master_dialog = CreateMasterDialog(self, xinput)
+        self.dialog_device_info = DeviceInfoDialog(self)
         self.dialog_reattach = ReattachDialog(self, xinput)
         self.edit_dialog = EditDialog(self)
         self.settings_window = SettingsWindow(self, settings)
@@ -283,6 +285,12 @@ class MainWindow:
         # Hide prop IDs
         self.tree_column_props_id.set_visible(not self.settings.hide_prop_ids)
 
+    def show_device_info_dialog(self) -> None:
+        '''Shows the device info dialog.'''
+
+        device = self.xinput.get_device_by_id(self.get_selected_device()['id'])
+        self.dialog_device_info.show(device)
+
     def show_edit_dialog(self) -> None:
         '''Shows the edit dialog.'''
 
@@ -379,6 +387,11 @@ class MainWindow:
             '''tool_refresh_devices "clicked" signal.'''
 
             self.gui.refresh_devices()
+
+        def on_tool_device_info_clicked(self, *args) -> None:
+            '''tool_device_info "clicked" signal.'''
+
+            self.gui.show_device_info_dialog()
 
         def on_tool_edit_prop_clicked(self, *args) -> None:
             '''tool_edit_prop "clicked" signal.'''

@@ -137,3 +137,15 @@ class Device:
         # TODO: proper error handling
         print(cmd)
         print(cmd_out)
+
+    def get_info(self) -> str:
+        '''Get device info.
+
+        Returns:
+            Device info.
+        '''
+
+        cmd = 'xinput list {}'.format(self.id)
+        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+
+        return cmd_out

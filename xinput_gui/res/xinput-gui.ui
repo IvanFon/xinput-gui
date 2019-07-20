@@ -2,6 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkTextBuffer" id="buffer_device_info"/>
   <object class="GtkAboutDialog" id="dialog_about">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
@@ -138,6 +139,76 @@ Romain F. T.</property>
     <action-widgets>
       <action-widget response="-6">btn_create_master_cancel</action-widget>
       <action-widget response="-10">btn_create_master_create</action-widget>
+    </action-widgets>
+  </object>
+  <object class="GtkMessageDialog" id="dialog_device_info">
+    <property name="can_focus">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">center-on-parent</property>
+    <property name="default_width">500</property>
+    <property name="default_height">400</property>
+    <property name="type_hint">dialog</property>
+    <property name="text" translatable="yes">Device Info</property>
+    <property name="secondary_text" translatable="yes">Device Name</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkButton" id="btn_device_info_close">
+                <property name="label" translatable="yes">Close</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="margin_left">10</property>
+            <property name="margin_right">10</property>
+            <property name="margin_bottom">10</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkTextView" id="text_device_info">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="editable">False</property>
+                <property name="buffer">buffer_device_info</property>
+                <property name="monospace">True</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-7">btn_device_info_close</action-widget>
     </action-widgets>
   </object>
   <object class="GtkMessageDialog" id="dialog_edit">
@@ -490,6 +561,21 @@ Romain F. T.</property>
                         <property name="use_underline">True</property>
                         <property name="icon_name">gtk-connect</property>
                         <signal name="clicked" handler="on_tool_reattach_slave_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="tool_device_info">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Show device info</property>
+                        <property name="label" translatable="yes">Show device info</property>
+                        <property name="use_underline">True</property>
+                        <property name="stock_id">gtk-info</property>
+                        <signal name="clicked" handler="on_tool_device_info_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
