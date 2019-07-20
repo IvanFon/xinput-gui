@@ -6,7 +6,7 @@ with open('README.md') as f:
 
 setup(
     name='xinput-gui',
-    version='0.3.0',
+    version='0.3.1',
     description='A simple GUI for Xorg\'s Xinput tool.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -30,7 +30,11 @@ setup(
         'Topic :: Utilities'
     ],
     keywords='xinput keyboard mouse touchpad',
-    packages=['xinput_gui'],
+    packages=[
+        'xinput_gui',
+        'xinput_gui/gui',
+        'xinput_gui/xinput'
+    ],
     install_requires=['PyGObject'],
     package_data={'xinput_gui': ['res/*']},
     entry_points={'gui_scripts': ['xinput-gui = xinput_gui.__main__:main']}
