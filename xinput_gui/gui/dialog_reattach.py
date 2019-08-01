@@ -18,22 +18,27 @@
 
 '''Reattach dialog.'''
 
+from typing import TYPE_CHECKING
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import resource_filename
 
-from ..xinput.devices import DeviceType
+from ..xinput.devices import Device, DeviceType
 from ..xinput.xinput import Xinput
+
+if TYPE_CHECKING:
+    from .device_list import DeviceList
 
 
 class ReattachDialog:
     '''Reattach dialog.'''
 
-    def __init__(self, main_window, xinput: Xinput) -> None:
+    def __init__(self, device_list: 'DeviceList', xinput: Xinput) -> None:
         '''Init ReattachDialog.'''
 
-        self.main_window = main_window
+        self.device_list = device_list
         self.xinput = xinput
 
         builder = self.get_builder()
@@ -44,7 +49,7 @@ class ReattachDialog:
         self.cmb_reattach_device = builder.get_object('cmb_reattach_device')
         self.store_reattach = builder.get_object('store_reattach')
 
-        self.dialog_reattach.set_transient_for(main_window.win_main)
+        self.dialog_reattach.set_transient_for(device_list.main_window.win_main)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get reattach dialog Gtk Builder.'''
@@ -55,19 +60,17 @@ class ReattachDialog:
             ['dialog_reattach', 'store_reattach'])
         return builder
 
-    def show(self, selected_device) -> None:
+    def show(self, device: Device) -> Gtk.ResponseType:
         '''Show the reattach dialog.
 
         Args:
-            selected_device: device being shown.
+            device: Device being shown.
         '''
-
-        device = self.xinput.get_device_by_id(selected_device['id'])
 
         # Setup dialog
 
         labels = self.dialog_reattach.get_message_area().get_children()
-        labels[1].set_label(selected_device['name'])
+        labels[1].set_label(device.name)
         self.rad_float_device.set_sensitive(not device.type == DeviceType.FLOATING)
         self.rad_float_device.set_active(not device.type == DeviceType.FLOATING)
         self.rad_reattach_device.set_sensitive(False)
@@ -94,6 +97,5 @@ class ReattachDialog:
 
                 device.reattach(master_id)
 
-            self.main_window.refresh_devices()
-
         self.dialog_reattach.hide()
+        return res

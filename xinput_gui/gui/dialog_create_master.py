@@ -18,6 +18,8 @@
 
 '''Create master device dialog.'''
 
+from typing import TYPE_CHECKING
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -25,14 +27,16 @@ from pkg_resources import resource_filename
 
 from ..xinput.xinput import Xinput
 
+if TYPE_CHECKING:
+    from .device_list import DeviceList
+
 
 class CreateMasterDialog:
     '''Create master device dialog.'''
 
-    def __init__(self, main_window, xinput: Xinput) -> None:
+    def __init__(self, device_list: 'DeviceList', xinput: Xinput) -> None:
         '''Init CreateMasterDialog.'''
 
-        self.main_window = main_window
         self.xinput = xinput
 
         builder = self.get_builder()
@@ -43,7 +47,7 @@ class CreateMasterDialog:
         self.entry_new_master_name = builder.get_object('entry_new_master_name')
         self.btn_create = builder.get_object('btn_create_master_create')
 
-        self.dialog_create_master.set_transient_for(main_window.win_main)
+        self.dialog_create_master.set_transient_for(device_list.main_window.win_main)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get create master device dialog Gtk Builder.'''
@@ -54,7 +58,7 @@ class CreateMasterDialog:
             ['dialog_create_master'])
         return builder
 
-    def show(self) -> None:
+    def show(self) -> Gtk.ResponseType:
         '''Show the create master device dialog.'''
 
         # Setup dialog
@@ -71,9 +75,9 @@ class CreateMasterDialog:
             new_master_name = self.entry_new_master_name.get_text()
 
             self.xinput.create_master_device(new_master_name)
-            self.main_window.refresh_devices()
 
         self.dialog_create_master.hide()
+        return res
 
     def change_error_message(self, message: str) -> None:
         '''Change the error message label.'''

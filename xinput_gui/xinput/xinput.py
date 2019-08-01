@@ -81,6 +81,7 @@ class Xinput():
         Args:
             name: new device name.
         '''
+
         cmd = 'xinput create-master "{}"'.format(name)
         cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
 
@@ -90,14 +91,17 @@ class Xinput():
 
         self.get_devices()
 
-    def remove_master_device(self, id_: int) -> None:
+    def remove_master_device(self, device: Device) -> None:
         '''Remove a master xinput device.
 
         Args:
-            id_: ID of xinput master device to remove.
+            device: Master Device to remove.
         '''
 
-        cmd = 'xinput remove-master {}'.format(id_)
+        if not device.master:
+            return
+
+        cmd = 'xinput remove-master {}'.format(device.id)
         cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
 
         # TODO: proper error handling

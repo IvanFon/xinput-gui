@@ -18,21 +18,28 @@
 
 '''Edit dialog.'''
 
-from typing import Dict, Union
+from typing import TYPE_CHECKING
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import resource_filename
 
+from ..xinput.xinput import Xinput
+from ..xinput.devices import Device, Prop
+
+if TYPE_CHECKING:
+    from .prop_list import PropList
+
 
 class EditDialog:
     '''Edit dialog.'''
 
-    def __init__(self, main_window) -> None:
+    def __init__(self, prop_list: 'PropList', xinput: Xinput) -> None:
         '''Init EditDialog.'''
 
-        self.main_window = main_window
+        self.prop_list = prop_list
+        self.xinput = xinput
 
         builder = self.get_builder()
 
@@ -44,7 +51,7 @@ class EditDialog:
         self.btn_edit_cancel = builder.get_object('btn_edit_cancel')
         self.btn_edit_apply = builder.get_object('btn_edit_apply')
 
-        self.dialog_edit.set_transient_for(main_window.win_main)
+        self.dialog_edit.set_transient_for(prop_list.main_window.win_main)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get edit dialog Gtk Builder.'''
@@ -56,8 +63,8 @@ class EditDialog:
         return builder
 
     def show(self,
-             device: Dict[str, Union[str, int]],
-             prop: Dict[str, Union[str, int]]) -> None:
+             device: Device,
+             prop: Prop) -> Gtk.ResponseType:
         '''Show the edit dialog.
 
         Args:
@@ -68,10 +75,10 @@ class EditDialog:
         # Setup dialog
 
         labels = self.dialog_edit.get_message_area().get_children()
-        labels[0].set_label(device['name'])
-        labels[1].set_label(prop['name'])
-        self.entry_old_val.set_text(prop['val'])
-        self.entry_new_val.set_text(prop['val'])
+        labels[0].set_label(device.name)
+        labels[1].set_label(prop.name)
+        self.entry_old_val.set_text(prop.val)
+        self.entry_new_val.set_text(prop.val)
         self.entry_new_val.grab_focus()
 
         # Show dialog
@@ -80,9 +87,10 @@ class EditDialog:
         if res == Gtk.ResponseType.APPLY:
             new_prop_val = self.entry_new_val.get_text()
 
-            self.main_window.set_prop(new_prop_val)
+            self.prop_list.set_prop(new_prop_val)
 
         self.dialog_edit.hide()
+        return res
 
     class SignalHandler:
         '''Handle edit dialog signals.'''

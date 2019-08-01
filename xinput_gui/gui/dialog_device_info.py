@@ -18,6 +18,8 @@
 
 '''Device info dialog.'''
 
+from typing import TYPE_CHECKING
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -25,21 +27,22 @@ from pkg_resources import resource_filename
 
 from ..xinput.devices import Device
 
+if TYPE_CHECKING:
+    from .device_list import DeviceList
+
 
 class DeviceInfoDialog:
     '''Device info dialog.'''
 
-    def __init__(self, main_window) -> None:
+    def __init__(self, device_list: 'DeviceList') -> None:
         '''Init DeviceInfoDialog.'''
-
-        self.main_window = main_window
 
         builder = self.get_builder()
 
         self.dialog_device_info = builder.get_object('dialog_device_info')
         self.buffer_device_info = builder.get_object('buffer_device_info')
 
-        self.dialog_device_info.set_transient_for(main_window.win_main)
+        self.dialog_device_info.set_transient_for(device_list.main_window.win_main)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get device info dialog Gtk Builder.'''
@@ -65,5 +68,5 @@ class DeviceInfoDialog:
 
         # Show dialog
 
-        res = self.dialog_device_info.run()
+        self.dialog_device_info.run()
         self.dialog_device_info.hide()
