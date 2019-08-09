@@ -1,4 +1,4 @@
-# __main__.py - app entry point
+# view_controller.py - app view controller
 # Copyright (C) 2019  Ivan Fonseca
 #
 # This file is part of xinput-gui.
@@ -16,13 +16,30 @@
 # You should have received a copy of the GNU General Public License
 # along with xinput-gui.  If not, see <https://www.gnu.org/licenses/>.
 
-'''App entry point.'''
+'''App view controller.'''
 
-from .view_controller import ViewController
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+from .gui.win_main import MainWindow
+from .settings import Settings
+from .xinput.xinput import Xinput
 
 
-def main():
-    '''Start xinput-gui.'''
+class ViewController:
+    '''App view controller.'''
 
-    view_controller = ViewController()
-    view_controller.start()
+    def __init__(self) -> None:
+        '''Init ViewController.'''
+
+        self.settings = Settings()
+        self.xinput = Xinput()
+        self.main_window = MainWindow(self.settings, self.xinput)
+        self.device_list = self.main_window.device_list
+        self.prop_list = self.main_window.prop_list
+
+    def start(self) -> None:
+        '''Start app.'''
+
+        Gtk.main()

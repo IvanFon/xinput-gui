@@ -19,6 +19,9 @@
 '''Main app window.'''
 
 import gi
+
+from xinput_gui.gui.prop_list import PropList
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import require, resource_filename
@@ -65,8 +68,6 @@ class MainWindow:
                                  True, True, 0)
 
         self.apply_settings()
-
-        Gtk.main()
 
     def get_builder(self) -> Gtk.Builder:
         '''Get main window Gtk Builder.'''

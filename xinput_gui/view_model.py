@@ -1,4 +1,4 @@
-# __main__.py - app entry point
+# view_model.py - app view model
 # Copyright (C) 2019  Ivan Fonseca
 #
 # This file is part of xinput-gui.
@@ -16,13 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with xinput-gui.  If not, see <https://www.gnu.org/licenses/>.
 
-'''App entry point.'''
+'''App view model.'''
 
-from .view_controller import ViewController
+from .xinput.xinput import Xinput
 
 
-def main():
-    '''Start xinput-gui.'''
+class ViewModel:
+    '''App view model.'''
 
-    view_controller = ViewController()
-    view_controller.start()
+    def __init__(self) -> None:
+        '''Init ViewModel.'''
+
+        self.xinput = Xinput()
