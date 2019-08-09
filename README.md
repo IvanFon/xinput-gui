@@ -36,7 +36,7 @@ Install it with pip: `pip install --user xinput-gui`.
 
 ### Manual install
 
-Clone this repo and run `./setup.py install --user`.
+Download the [latest release](https://github.com/IvanFon/xinput-gui/releases/latest) or clone this repo and run `./setup.py install --user`.
 
 ## Usage
 
