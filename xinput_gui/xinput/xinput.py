@@ -18,10 +18,14 @@
 
 '''xinput wrapper.'''
 
+from typing import TYPE_CHECKING
 import re
 import subprocess
 
 from .devices import Device, DeviceType
+
+if TYPE_CHECKING:
+    from ..view_controller import ViewController
 
 
 class Xinput():
@@ -31,8 +35,30 @@ class Xinput():
         '''Init Xinput.'''
 
         self.devices = []
+        self.log = ''
 
-        self.get_devices()
+    def set_controller(self, controller: 'ViewController') -> None:
+        self.controller = controller
+
+    def run_command(self, cmd) -> str:
+        '''Run a command.
+
+        Returns:
+            Command output.
+        '''
+
+        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+
+        # Update log
+        self.log += 'COMMAND:\n'
+        self.log += cmd
+        self.log += '\nOUTPUT:\n'
+        self.log += cmd_out
+        self.log += '\n\n========== SEPARATOR ==========\n\n'
+
+        self.controller.log_updated()
+
+        return cmd_out
 
     def get_devices(self) -> None:
         '''Get xinput devices.'''
@@ -40,17 +66,16 @@ class Xinput():
         self.devices.clear()
 
         device_id_cmd = 'xinput list --id-only'
-        device_id_out = subprocess.check_output(device_id_cmd, shell=True)
-        device_ids = device_id_out.decode('utf-8').splitlines()
+        device_ids = self.run_command(device_id_cmd).splitlines()
         device_ids = map(lambda x: re.search(r'\D*(\d+)\D*', x).group(1), device_ids)
 
         for device_id in device_ids:
             device_name_cmd = 'xinput list --name-only {}'.format(device_id)
-            device_name_out = subprocess.check_output(device_name_cmd, shell=True)
-            device_name = device_name_out.decode('utf-8').rstrip('\n')
+            device_name_out = self.run_command(device_name_cmd)
+            device_name = device_name_out.rstrip('\n')
 
             device_type_cmd = 'xinput list --short {}'.format(device_id)
-            device_type_out = str(subprocess.check_output(device_type_cmd, shell=True))
+            device_type_out = self.run_command(device_type_cmd)
             if 'floating' in device_type_out:
                 device_type = DeviceType.FLOATING
             elif 'pointer' in device_type_out:
@@ -60,7 +85,7 @@ class Xinput():
 
             device_master = 'master' in device_type_out
 
-            self.devices.append(Device(device_id, device_name, device_type, device_master))
+            self.devices.append(Device(self, device_id, device_name, device_type, device_master))
 
     def get_device_by_id(self, id_: int) -> Device:
         '''Get a device by it's ID.
@@ -83,11 +108,7 @@ class Xinput():
         '''
 
         cmd = 'xinput create-master "{}"'.format(name)
-        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
-
-        # TODO: proper error handling
-        print(cmd)
-        print(cmd_out)
+        self.run_command(cmd)
 
         self.get_devices()
 
@@ -102,10 +123,6 @@ class Xinput():
             return
 
         cmd = 'xinput remove-master {}'.format(device.id)
-        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
-
-        # TODO: proper error handling
-        print(cmd)
-        print(cmd_out)
+        self.run_command(cmd)
 
         self.get_devices()

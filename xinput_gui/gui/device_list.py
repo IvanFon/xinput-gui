@@ -65,8 +65,6 @@ class DeviceList:
         self.dialog_device_info = DeviceInfoDialog(self)
         self.dialog_reattach = ReattachDialog(self, xinput)
 
-        self.refresh_devices()
-
     def get_builder(self) -> Gtk.Builder:
         '''Get device list Gtk Builder.'''
 

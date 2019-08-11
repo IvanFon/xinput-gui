@@ -38,8 +38,18 @@ class ViewController:
         self.main_window = MainWindow(self.settings, self.xinput)
         self.device_list = self.main_window.device_list
         self.prop_list = self.main_window.prop_list
+        self.log = self.main_window.log
+
+        self.xinput.set_controller(self)
+
+        self.device_list.refresh_devices()
 
     def start(self) -> None:
         '''Start app.'''
 
         Gtk.main()
+
+    def log_updated(self) -> None:
+        '''Xinput log updated.'''
+
+        self.log.update()

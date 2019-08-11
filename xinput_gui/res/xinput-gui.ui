@@ -73,6 +73,58 @@
       <action-widget response="-7">btn_device_info_close</action-widget>
     </action-widgets>
   </object>
+  <object class="GtkTextBuffer" id="buffer_log"/>
+  <object class="GtkGrid" id="grid_log">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="row_spacing">6</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">This log shows xinput commands ran by xinput-gui along with their output. It may be useful when determining why a change failed to be applied, or for debugging xinput-gui.</property>
+        <property name="wrap">True</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="btn_clear_log">
+        <property name="label" translatable="yes">Clear Log</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <signal name="clicked" handler="on_btn_clear_log_clicked" swapped="no"/>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="vexpand">True</property>
+        <property name="shadow_type">in</property>
+        <child>
+          <object class="GtkTextView" id="text_log">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="editable">False</property>
+            <property name="buffer">buffer_log</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">1</property>
+        <property name="width">2</property>
+      </packing>
+    </child>
+  </object>
   <object class="GtkAboutDialog" id="dialog_about">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
@@ -578,8 +630,8 @@ Romain F. T.</property>
             <child>
               <object class="GtkTreeViewColumn">
                 <property name="resizable">True</property>
-                <property name="fixed_width">275</property>
-                <property name="max_width">600</property>
+                <property name="fixed_width">300</property>
+                <property name="max_width">650</property>
                 <property name="title" translatable="yes">Name</property>
                 <child>
                   <object class="GtkCellRendererText"/>
@@ -790,8 +842,8 @@ Romain F. T.</property>
   <object class="GtkWindow" id="win_main">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Xinput GUI</property>
-    <property name="default_width">800</property>
-    <property name="default_height">400</property>
+    <property name="default_width">900</property>
+    <property name="default_height">450</property>
     <signal name="destroy" handler="on_win_main_destroy" swapped="no"/>
     <child>
       <placeholder/>
@@ -859,26 +911,67 @@ Romain F. T.</property>
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="box_main">
+          <object class="GtkStackSwitcher">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="margin_top">6</property>
+            <property name="stack">stack_main</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkStack" id="stack_main">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_left">12</property>
             <property name="margin_right">12</property>
             <property name="margin_top">6</property>
             <property name="margin_bottom">12</property>
-            <property name="spacing">16</property>
-            <property name="homogeneous">True</property>
+            <property name="transition_duration">100</property>
+            <property name="transition_type">crossfade</property>
             <child>
-              <placeholder/>
+              <object class="GtkBox" id="box_stack_editor">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="spacing">16</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="name">page_editor</property>
+                <property name="title" translatable="yes">Editor</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkBox" id="box_stack_log">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="name">page_log</property>
+                <property name="title" translatable="yes">Log</property>
+                <property name="position">1</property>
+              </packing>
             </child>
           </object>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

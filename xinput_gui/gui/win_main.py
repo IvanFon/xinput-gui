@@ -20,8 +20,6 @@
 
 import gi
 
-from xinput_gui.gui.prop_list import PropList
-
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import require, resource_filename
@@ -30,6 +28,7 @@ from ..settings import Settings
 from ..xinput.xinput import Xinput
 from .device_list import DeviceList
 from .dialog_about import AboutDialog
+from .log import Log
 from .prop_list import PropList
 from .win_settings import SettingsWindow
 
@@ -52,20 +51,24 @@ class MainWindow:
         builder.connect_signals(MainWindow.SignalHandler(self))
 
         self.win_main = builder.get_object('win_main')
-        self.box_main = builder.get_object('box_main')
+        self.box_editor = builder.get_object('box_stack_editor')
+        self.box_log = builder.get_object('box_stack_log')
 
         self.win_main.set_title('Xinput GUI {}'.format(__version__))
         self.win_main.show_all()
 
-        self.device_list = DeviceList(self, settings, xinput)
-        self.prop_list = PropList(self, settings, xinput)
         self.about_dialog = AboutDialog(self)
+        self.device_list = DeviceList(self, settings, xinput)
+        self.log = Log(self, xinput)
+        self.prop_list = PropList(self, settings, xinput)
         self.settings_window = SettingsWindow(self, settings)
 
-        self.box_main.pack_start(self.device_list.grid_device_list,
+        self.box_editor.pack_start(self.device_list.grid_device_list,
                                  True, True, 0)
-        self.box_main.pack_start(self.prop_list.grid_prop_list,
+        self.box_editor.pack_start(self.prop_list.grid_prop_list,
                                  True, True, 0)
+
+        self.box_log.pack_start(self.log.grid_log, True, True, 0)
 
         self.apply_settings()
 
@@ -86,11 +89,11 @@ class MainWindow:
 
         # Vertical layout
         if self.settings.vertical_layout:
-            self.box_main.set_orientation(Gtk.Orientation.VERTICAL)
-            self.win_main.resize(600, 600)
+            self.box_editor.set_orientation(Gtk.Orientation.VERTICAL)
+            self.win_main.resize(600, 800)
         else:
-            self.box_main.set_orientation(Gtk.Orientation.HORIZONTAL)
-            self.win_main.resize(800, 400)
+            self.box_editor.set_orientation(Gtk.Orientation.HORIZONTAL)
+            self.win_main.resize(900, 450)
 
     def show_settings_window(self) -> None:
         '''Shows the settings window.'''

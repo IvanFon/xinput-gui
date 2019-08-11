@@ -19,8 +19,11 @@
 '''xinput device classes.'''
 
 from enum import Enum
+from typing import TYPE_CHECKING
 import re
-import subprocess
+
+if TYPE_CHECKING:
+    from .xinput import Xinput
 
 
 class DeviceType(Enum):
@@ -52,6 +55,7 @@ class Device:
     '''An xinput device.'''
 
     def __init__(self,
+                 xinput: 'Xinput',
                  id_: int,
                  name: str,
                  type_: DeviceType,
@@ -65,6 +69,7 @@ class Device:
             master: if device is master.
         '''
 
+        self.xinput = xinput
         self.id = id_
         self.name = name
         self.type = type_
@@ -80,7 +85,7 @@ class Device:
         self.props.clear()
 
         props_cmd = 'xinput list-props {}'.format(self.id)
-        props_out = subprocess.check_output(props_cmd, shell=True).decode('utf-8')
+        props_out = self.xinput.run_command(props_cmd)
         props_out = props_out.splitlines()
         props_out.pop(0)
         props_out = list(map(lambda x: x.replace('\t', ''), props_out))
@@ -102,11 +107,7 @@ class Device:
         '''
 
         cmd = 'xinput set-prop {} {} {}'.format(self.id, prop_id, prop_val)
-        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
-
-        # TODO: error handling
-        print(cmd)
-        print(cmd_out)
+        self.xinput.run_command(cmd)
 
     def float(self) -> None:
         '''Float slave device.'''
@@ -115,11 +116,7 @@ class Device:
             return
 
         cmd = 'xinput float {}'.format(self.id)
-        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
-
-        # TODO: proper error handling
-        print(cmd)
-        print(cmd_out)
+        self.xinput.run_command(cmd)
 
     def reattach(self, master_id: int) -> None:
         '''Reattach device to master.
@@ -132,11 +129,7 @@ class Device:
             return
 
         cmd = 'xinput reattach {} {}'.format(self.id, master_id)
-        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
-
-        # TODO: proper error handling
-        print(cmd)
-        print(cmd_out)
+        self.xinput.run_command(cmd)
 
     def get_info(self) -> str:
         '''Get device info.
@@ -146,6 +139,6 @@ class Device:
         '''
 
         cmd = 'xinput list {}'.format(self.id)
-        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+        cmd_out = self.xinput.run_command(cmd)
 
         return cmd_out
