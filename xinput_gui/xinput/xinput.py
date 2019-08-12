@@ -47,7 +47,10 @@ class Xinput():
             Command output.
         '''
 
-        cmd_out = subprocess.check_output(cmd, shell=True).decode('utf-8')
+        cmd_out = subprocess.run(cmd.split(' '),
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+        cmd_out = cmd_out.stdout.decode('utf-8')
 
         # Update log
         self.log += 'COMMAND:\n'
@@ -85,7 +88,11 @@ class Xinput():
 
             device_master = 'master' in device_type_out
 
-            self.devices.append(Device(self, device_id, device_name, device_type, device_master))
+            self.devices.append(Device(self,
+                                       device_id,
+                                       device_name,
+                                       device_type,
+                                       device_master))
 
     def get_device_by_id(self, id_: int) -> Device:
         '''Get a device by it's ID.
