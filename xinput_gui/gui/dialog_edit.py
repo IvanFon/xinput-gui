@@ -25,21 +25,20 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import resource_filename
 
-from ..xinput.xinput import Xinput
 from ..xinput.devices import Device, Prop
 
 if TYPE_CHECKING:
-    from .prop_list import PropList
+    from ..view_controller import ViewController
+    from .win_main import MainWindow
 
 
 class EditDialog:
     '''Edit dialog.'''
 
-    def __init__(self, prop_list: 'PropList', xinput: Xinput) -> None:
+    def __init__(self, controller: 'ViewController', main_window: 'MainWindow') -> None:
         '''Init EditDialog.'''
 
-        self.prop_list = prop_list
-        self.xinput = xinput
+        self.controller = controller
 
         builder = self.get_builder()
 
@@ -51,7 +50,7 @@ class EditDialog:
         self.btn_edit_cancel = builder.get_object('btn_edit_cancel')
         self.btn_edit_apply = builder.get_object('btn_edit_apply')
 
-        self.dialog_edit.set_transient_for(prop_list.main_window.win_main)
+        self.dialog_edit.set_transient_for(main_window.win_main)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get edit dialog Gtk Builder.'''
@@ -87,7 +86,7 @@ class EditDialog:
         if res == Gtk.ResponseType.APPLY:
             new_prop_val = self.entry_new_val.get_text()
 
-            self.prop_list.set_prop(new_prop_val)
+            self.controller.set_prop(new_prop_val)
 
         self.dialog_edit.hide()
         return res

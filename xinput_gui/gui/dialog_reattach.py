@@ -18,7 +18,7 @@
 
 '''Reattach dialog.'''
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -26,20 +26,19 @@ from gi.repository import Gtk
 from pkg_resources import resource_filename
 
 from ..xinput.devices import Device, DeviceType
-from ..xinput.xinput import Xinput
 
 if TYPE_CHECKING:
-    from .device_list import DeviceList
+    from ..view_controller import ViewController
+    from .win_main import MainWindow
 
 
 class ReattachDialog:
     '''Reattach dialog.'''
 
-    def __init__(self, device_list: 'DeviceList', xinput: Xinput) -> None:
+    def __init__(self, controller: 'ViewController', main_window: 'MainWindow') -> None:
         '''Init ReattachDialog.'''
 
-        self.device_list = device_list
-        self.xinput = xinput
+        self.controller = controller
 
         builder = self.get_builder()
 
@@ -49,7 +48,7 @@ class ReattachDialog:
         self.cmb_reattach_device = builder.get_object('cmb_reattach_device')
         self.store_reattach = builder.get_object('store_reattach')
 
-        self.dialog_reattach.set_transient_for(device_list.main_window.win_main)
+        self.dialog_reattach.set_transient_for(main_window.win_main)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get reattach dialog Gtk Builder.'''
@@ -60,24 +59,25 @@ class ReattachDialog:
             ['dialog_reattach', 'store_reattach'])
         return builder
 
-    def show(self, device: Device) -> Gtk.ResponseType:
+    def show(self, selected_device: Device, devices: List[Device]) -> Gtk.ResponseType:
         '''Show the reattach dialog.
 
         Args:
-            device: Device being shown.
+            selected_device: Device being shown.
+            devices: List of devices.
         '''
 
         # Setup dialog
 
         labels = self.dialog_reattach.get_message_area().get_children()
-        labels[1].set_label(device.name)
-        self.rad_float_device.set_sensitive(not device.type == DeviceType.FLOATING)
-        self.rad_float_device.set_active(not device.type == DeviceType.FLOATING)
+        labels[1].set_label(selected_device.name)
+        self.rad_float_device.set_sensitive(not selected_device.type == DeviceType.FLOATING)
+        self.rad_float_device.set_active(not selected_device.type == DeviceType.FLOATING)
         self.rad_reattach_device.set_sensitive(False)
-        self.rad_reattach_device.set_active(device.type == DeviceType.FLOATING)
+        self.rad_reattach_device.set_active(selected_device.type == DeviceType.FLOATING)
 
         self.store_reattach.clear()
-        for d in self.xinput.devices:
+        for d in devices:
             self.rad_reattach_device.set_sensitive(True)
             self.cmb_reattach_device.set_sensitive(True)
             self.cmb_reattach_device.set_active(0)
@@ -90,12 +90,12 @@ class ReattachDialog:
         if res == Gtk.ResponseType.APPLY:
             # Float
             if self.rad_float_device.get_active():
-                device.float()
+                self.controller.float_selected_device()
             # Reattach
             else:
                 master_id = self.store_reattach[self.cmb_reattach_device.get_active()][0]
 
-                device.reattach(master_id)
+                self.controller.reattach_selected_device(master_id)
 
         self.dialog_reattach.hide()
         return res

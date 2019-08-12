@@ -25,8 +25,6 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import resource_filename
 
-from ..xinput.xinput import Xinput
-
 if TYPE_CHECKING:
     from .win_main import MainWindow
 
@@ -34,11 +32,10 @@ if TYPE_CHECKING:
 class Log:
     '''Log.'''
 
-    def __init__(self, main_window: 'MainWindow', xinput: Xinput):
+    def __init__(self, main_window: 'MainWindow'):
         '''Init Log.'''
 
         self.main_window = main_window
-        self.xinput = xinput
 
         builder = self.get_builder()
 
@@ -66,10 +63,14 @@ class Log:
         # Unfocus clear button
         self.main_window.win_main.set_focus(None)
 
-    def update(self) -> None:
-        '''Update log.'''
+    def update(self, log_text: str) -> None:
+        '''Update log.
 
-        self.buffer_log.set_text(self.xinput.log)
+        Args:
+            log_text: Updated log text.
+        '''
+
+        self.buffer_log.set_text(log_text)
 
     class SignalHandler:
         '''Handle log signals.'''

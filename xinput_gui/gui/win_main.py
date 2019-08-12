@@ -18,19 +18,22 @@
 
 '''Main app window.'''
 
-import gi
+from typing import TYPE_CHECKING
 
+import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pkg_resources import require, resource_filename
 
 from ..settings import Settings
-from ..xinput.xinput import Xinput
 from .device_list import DeviceList
 from .dialog_about import AboutDialog
 from .log import Log
 from .prop_list import PropList
 from .win_settings import SettingsWindow
+
+if TYPE_CHECKING:
+    from ..view_controller import ViewController
 
 
 __version__ = require('xinput_gui')[0].version
@@ -39,11 +42,11 @@ __version__ = require('xinput_gui')[0].version
 class MainWindow:
     '''Main app window.'''
 
-    def __init__(self, settings: Settings, xinput: Xinput) -> None:
+    def __init__(self, controller: 'ViewController', settings: Settings) -> None:
         '''Init MainWindow.'''
 
+        self.controller = controller
         self.settings = settings
-        self.xinput = xinput
         self.refreshing = False
 
         builder = self.get_builder()
@@ -58,9 +61,9 @@ class MainWindow:
         self.win_main.show_all()
 
         self.about_dialog = AboutDialog(self)
-        self.device_list = DeviceList(self, settings, xinput)
-        self.log = Log(self, xinput)
-        self.prop_list = PropList(self, settings, xinput)
+        self.device_list = DeviceList(controller, self, settings)
+        self.log = Log(self)
+        self.prop_list = PropList(controller, self, settings)
         self.settings_window = SettingsWindow(self, settings)
 
         self.box_editor.pack_start(self.device_list.grid_device_list,

@@ -28,21 +28,24 @@ from pkg_resources import resource_filename
 from ..xinput.devices import Device
 
 if TYPE_CHECKING:
-    from .device_list import DeviceList
+    from ..view_controller import ViewController
+    from .win_main import MainWindow
 
 
 class DeviceInfoDialog:
     '''Device info dialog.'''
 
-    def __init__(self, device_list: 'DeviceList') -> None:
+    def __init__(self, controller: 'ViewController', main_window: 'MainWindow') -> None:
         '''Init DeviceInfoDialog.'''
+
+        self.controller = controller
 
         builder = self.get_builder()
 
         self.dialog_device_info = builder.get_object('dialog_device_info')
         self.buffer_device_info = builder.get_object('buffer_device_info')
 
-        self.dialog_device_info.set_transient_for(device_list.main_window.win_main)
+        self.dialog_device_info.set_transient_for(main_window.win_main)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get device info dialog Gtk Builder.'''

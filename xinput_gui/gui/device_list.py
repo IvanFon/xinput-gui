@@ -18,7 +18,7 @@
 
 '''Device list.'''
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -27,29 +27,26 @@ from pkg_resources import resource_filename
 
 from ..settings import Settings
 from ..xinput.devices import Device, DeviceType
-from ..xinput.xinput import Xinput
-from .dialog_create_master import CreateMasterDialog
-from .dialog_device_info import DeviceInfoDialog
-from .dialog_reattach import ReattachDialog
 
 if TYPE_CHECKING:
+    from ..view_controller import ViewController
     from .win_main import MainWindow
 
 
 class DeviceList:
     '''Device list.'''
 
-    def __init__(self, main_window: 'MainWindow', settings: Settings, xinput: Xinput) -> None:
+    def __init__(self, controller: 'ViewController', main_window: 'MainWindow', settings: Settings) -> None:
         '''Init DeviceList.'''
 
+        self.controller = controller
         self.main_window = main_window
         self.settings = settings
-        self.xinput = xinput
         self.refreshing = False
 
         builder = self.get_builder()
 
-        builder.connect_signals(DeviceList.SignalHandler(self))
+        builder.connect_signals(DeviceList.SignalHandler(controller))
 
         self.grid_device_list = builder.get_object('grid_device_list')
         self.store_devices = builder.get_object('store_devices')
@@ -60,10 +57,6 @@ class DeviceList:
             'tree_column_devices_id')
         self.tool_remove_master = builder.get_object('tool_remove_master')
         self.tool_reattach_slave = builder.get_object('tool_reattach_slave')
-
-        self.create_master_dialog = CreateMasterDialog(self, xinput)
-        self.dialog_device_info = DeviceInfoDialog(self)
-        self.dialog_reattach = ReattachDialog(self, xinput)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get device list Gtk Builder.'''
@@ -80,38 +73,20 @@ class DeviceList:
         # Hide device IDs
         self.tree_column_devices_id.set_visible(not self.settings.hide_device_ids)
 
-    def get_selected_device(self) -> Device:
-        '''Get the currently selected device.
+    def refresh_devices(self, devices: List[Device]) -> None:
+        '''Refresh the device list.
 
-        Returns:
-            Currently selected Device.
+        Args:
+            devices: List of Devices.
         '''
 
-        model, treeiter = self.tree_devices_selection.get_selected()
-
-        if not treeiter:
-            return None
-
-        return self.xinput.get_device_by_id(model[treeiter][0])
-
-    def refresh_devices(self) -> None:
-        '''Refresh the device list.'''
-
-        self.refreshing = True
-
-        self.xinput.get_devices()
-
         self.store_devices.clear()
-        #  self.store_props.clear()
         self.tree_devices_selection.unselect_all()
-        #  self.tree_props_selection.unselect_all()
         self.tool_remove_master.set_sensitive(False)
-        #  self.tool_edit_prop.set_sensitive(False)
-        #  self.tool_refresh_props.set_sensitive(False)
 
         master_iter = None
         floating_devices = []
-        for device in self.xinput.devices:
+        for device in devices:
             device_row = [
                 int(device.id),
                 device.name,
@@ -133,8 +108,6 @@ class DeviceList:
 
         self.tree_devices.expand_all()
 
-        self.refreshing = False
-
     def show_device(self, device: Device) -> None:
         '''Display properties of selected device.
 
@@ -144,10 +117,6 @@ class DeviceList:
 
         if device is None:
             return
-
-        # Show props
-
-        self.main_window.prop_list.show_device_props(device)
 
         # Check if device is master
         if device.master:
@@ -163,75 +132,47 @@ class DeviceList:
         else:
             self.tool_reattach_slave.set_icon_name('gtk-disconnect')
 
-    def show_create_master_dialog(self) -> None:
-        '''Show the create master device dialog.'''
-
-        res = self.create_master_dialog.show()
-        if res == Gtk.ResponseType.APPLY:
-            self.refresh_devices()
-
-    def remove_selected_master(self) -> None:
-        '''Remove selected master device.'''
-
-        device = self.get_selected_device()
-
-        if not device.master:
-            return
-
-        self.xinput.remove_master_device(device)
-        self.refresh_devices()
-
-    def show_reattach_dialog(self) -> None:
-        '''Show the reattach dialog.'''
-
-        res = self.dialog_reattach.show(self.get_selected_device())
-        if res == Gtk.ResponseType.APPLY:
-            self.refresh_devices()
-
-    def show_device_info_dialog(self) -> None:
-        '''Show the device info dialog.'''
-
-        self.dialog_device_info.show(self.get_selected_device())
-
     class SignalHandler:
         '''Handle device list signals.'''
 
-        def __init__(self, gui) -> None:
+        def __init__(self, controller: 'ViewController') -> None:
             '''Init SignalHandler.'''
 
-            self.gui = gui
+            self.controller = controller
 
         def on_tree_devices_selection_changed(
                 self,
                 selection: Gtk.TreeSelection) -> None:
             '''tree_devices_selection "changed" signal.'''
 
-            if self.gui.refreshing:
+            model, treeiter = selection.get_selected()
+
+            if not treeiter:
                 return
 
-            self.gui.show_device(self.gui.get_selected_device())
+            self.controller.device_selected(model[treeiter][0])
 
         def on_tool_create_master_clicked(self, *args) -> None:
             '''tool_create_master "clicked" signal.'''
 
-            self.gui.show_create_master_dialog()
+            self.controller.show_create_master_dialog()
 
         def on_tool_remove_master_clicked(self, *args) -> None:
             '''tool_remove_master "clicked" signal.'''
 
-            self.gui.remove_selected_master()
+            self.controller.remove_selected_master_device()
 
         def on_tool_reattach_slave_clicked(self, *args) -> None:
             '''tool_reattach_slave "clicked" signal.'''
 
-            self.gui.show_reattach_dialog()
+            self.controller.show_reattach_dialog()
 
         def on_tool_device_info_clicked(self, *args) -> None:
             '''tool_device_info "clicked" signal.'''
 
-            self.gui.show_device_info_dialog()
+            self.controller.show_device_info()
 
         def on_tool_refresh_devices_clicked(self, *args) -> None:
             '''tool_refresh_devices "clicked" signal.'''
 
-            self.gui.refresh_devices()
+            self.controller.refresh_devices()

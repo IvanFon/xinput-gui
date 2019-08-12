@@ -26,27 +26,26 @@ from gi.repository import Gtk
 from pkg_resources import resource_filename
 
 from ..settings import Settings
-from ..xinput.devices import Device, Prop
-from ..xinput.xinput import Xinput
-from .dialog_edit import EditDialog
+from ..xinput.devices import Device
 
 if TYPE_CHECKING:
+    from ..view_controller import ViewController
     from .win_main import MainWindow
 
 
 class PropList:
     '''Device properties list.'''
 
-    def __init__(self, main_window: 'MainWindow', settings: Settings, xinput: Xinput) -> None:
+    def __init__(self, controller: 'ViewController', main_window: 'MainWindow', settings: Settings) -> None:
         '''Init PropList.'''
 
+        self.controller = controller
         self.main_window = main_window
         self.settings = settings
-        self.xinput = xinput
 
         builder = self.get_builder()
 
-        builder.connect_signals(PropList.SignalHandler(self))
+        builder.connect_signals(PropList.SignalHandler(controller))
 
         self.grid_prop_list = builder.get_object('grid_prop_list')
         self.store_props = builder.get_object('store_props')
@@ -58,8 +57,6 @@ class PropList:
         self.cell_prop_val = builder.get_object('cell_prop_val')
         self.tool_edit_prop = builder.get_object('tool_edit_prop')
         self.tool_refresh_props = builder.get_object('tool_refresh_props')
-
-        self.edit_dialog = EditDialog(self, xinput)
 
     def get_builder(self) -> Gtk.Builder:
         '''Get prop list Gtk Builder.'''
@@ -99,71 +96,39 @@ class PropList:
 
         self.tree_props.scroll_to_point(0, 0)
 
-    def refresh_props(self) -> None:
-        '''Refresh properties of currently selected device.'''
+    def enable_edit_tool(self) -> None:
+        '''Enable edit prop tool.'''
 
-        selected_device = self.main_window.device_list.get_selected_device()
-        selected_device.get_props()
-        self.main_window.device_list.show_device(selected_device)
-
-    def get_selected_prop(self) -> Prop:
-        '''Get the currently selected property.
-
-        Returns:
-            Selected Prop.
-        '''
-
-        model, treeiter = self.tree_props_selection.get_selected()
-        return Prop(
-            model[treeiter][0],
-            model[treeiter][1],
-            model[treeiter][2],
-        )
-
-    def set_prop(self, new_val: str) -> None:
-        '''Set the value of the currently selected device property.
-
-        Args:
-            new_val: New value for the property.
-        '''
-
-        device = self.main_window.device_list.get_selected_device()
-        prop = self.get_selected_prop()
-
-        # Update prop
-        device.set_prop(prop.id, new_val)
-
-        # Update displayed value
-        model, treeiter = self.tree_props_selection.get_selected()
-        model[treeiter][2] = new_val
-
-    def show_edit_dialog(self) -> None:
-        '''Show the edit prop dialog.'''
-
-        device = self.main_window.device_list.get_selected_device()
-        prop = self.get_selected_prop()
-
-        res = self.edit_dialog.show(device, prop)
-        if res == Gtk.ResponseType.APPLY:
-            self.refresh_props()
+        self.tool_edit_prop.set_sensitive(True)
 
     class SignalHandler:
         '''Handle prop list signals.'''
 
-        def __init__(self, gui) -> None:
+        def __init__(self, controller) -> None:
             '''Init SignalHandler.'''
 
-            self.gui = gui
+            self.controller = controller
 
-        def on_tree_props_selection_changed(self, *args) -> None:
+        def on_tree_props_selection_changed(
+                self,
+                selection: Gtk.TreeSelection) -> None:
             '''tree_props_selection "changed" signal.'''
 
-            self.gui.tool_edit_prop.set_sensitive(True)
+            model, treeiter = selection.get_selected()
+
+            if not treeiter:
+                return
+
+            self.controller.prop_selected(
+                model[treeiter][0],
+                model[treeiter][1],
+                model[treeiter][2],
+            )
 
         def on_tree_props_row_activated(self, *args) -> None:
             '''tree_props "row-activated" signal.'''
 
-            self.gui.show_edit_dialog()
+            self.controller.show_edit_dialog()
 
         def on_cell_prop_val_edited(self,
                                     renderer: Gtk.CellRendererText,
@@ -171,14 +136,14 @@ class PropList:
                                     new_text) -> None:
             '''cell_prop_val "edited" signal.'''
 
-            self.gui.set_prop(new_text)
+            self.controller.set_prop(new_text)
 
         def on_tool_edit_prop_clicked(self, *args) -> None:
             '''tool_edit_prop "clicked" signal.'''
 
-            self.gui.show_edit_dialog()
+            self.controller.show_edit_dialog()
 
         def on_tool_refresh_props_clicked(self, *args) -> None:
             '''tool_refresh_props "clicked" signal.'''
 
-            self.gui.refresh_props()
+            self.controller.refresh_props()

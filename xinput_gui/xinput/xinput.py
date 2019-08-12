@@ -59,7 +59,7 @@ class Xinput():
         self.log += cmd_out
         self.log += '\n\n========== SEPARATOR ==========\n\n'
 
-        self.controller.log_updated()
+        self.controller.log_updated(self.log)
 
         return cmd_out
 
